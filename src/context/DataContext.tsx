@@ -531,13 +531,21 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     const recordId = record.id || existing?.id || `att-${Date.now()}`;
-    const updatedRecord: AttendanceRecord = {
+    const cleanedRecords = (record.records || []).map((s) => ({
+      studentId: s.studentId || '',
+      studentName: s.studentName || '',
+      status: s.status || 'present'
+    }));
+
+    const sanitizedPayload: AttendanceRecord = {
       id: recordId,
-      groupId: record.groupId,
-      teacherId: record.teacherId,
-      date: record.date,
-      studentId: record.studentId,
-      statusMap: record.statusMap,
+      groupId: record.groupId || '',
+      groupName: record.groupName || '',
+      teacherId: record.teacherId || '',
+      date: record.date || new Date().toISOString(),
+      lessonNumber: record.lessonNumber || 1,
+      records: cleanedRecords,
+      statusMap: record.statusMap || {},
       marksMap: record.marksMap || {},
       commentsMap: record.commentsMap || {},
       topicCovered: record.topicCovered || '',
@@ -550,18 +558,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const idx = prev.findIndex((r) => r.id === recordId);
       if (idx >= 0) {
         const next = [...prev];
-        next[idx] = updatedRecord;
+        next[idx] = sanitizedPayload;
         return next;
       }
-      return [...prev, updatedRecord];
+      return [...prev, sanitizedPayload];
     });
 
     try {
-      await setDoc(doc(db, 'attendance_records', recordId), updatedRecord);
-      await setDoc(doc(db, 'attendance', recordId), updatedRecord);
-      await setDoc(doc(db, 'sessions', recordId), updatedRecord);
-    } catch (e) {
-      console.warn('Firestore write notice for saveAttendanceRecord:', e);
+      await setDoc(doc(db, 'attendance', recordId), sanitizedPayload);
+      await setDoc(doc(db, 'attendance_records', recordId), sanitizedPayload);
+      await setDoc(doc(db, 'sessions', recordId), sanitizedPayload);
+    } catch (error) {
+      console.error('Error saving attendance:', error);
     }
     return recordId;
   };

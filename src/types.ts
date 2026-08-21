@@ -42,9 +42,16 @@ export interface AttendanceCommentsMap {
 export interface AttendanceRecord {
   id: string;
   groupId: string;
+  groupName?: string;
   teacherId: string;
   studentId?: string; // Explicit individual student tracking if scoped
   date: string; // YYYY-MM-DD
+  lessonNumber?: number;
+  records?: Array<{
+    studentId: string;
+    studentName: string;
+    status: string;
+  }>;
   statusMap: AttendanceStatusMap;
   marksMap?: AttendanceMarksMap;
   commentsMap?: AttendanceCommentsMap;

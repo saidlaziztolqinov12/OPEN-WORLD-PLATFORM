@@ -199,15 +199,30 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
     setSavingAttendance(true);
 
     try {
+      const recordsList = groupStudents.map((s) => ({
+        studentId: s.id || s.studentId || '',
+        studentName: `${s.firstName || ''} ${s.surname || ''}`.trim() || s.studentId || '',
+        status: statusMap[s.id] || 'present'
+      }));
+
+      const existing = attendanceRecords.find(
+        (r) => r.groupId === group.id && r.date === selectedDate
+      );
+      const recordId = existing?.id || `att-${Date.now()}`;
+
       await saveAttendanceRecord({
-        groupId: group.id,
-        teacherId: group.teacherId,
-        date: selectedDate,
+        id: recordId,
+        groupId: group.id || '',
+        groupName: group.name || '',
+        teacherId: group.teacherId || '',
+        date: selectedDate || new Date().toISOString(),
+        lessonNumber: 1,
+        records: recordsList,
         statusMap,
         marksMap,
         commentsMap,
-        topicCovered: topicCovered.trim(),
-        notes: sessionNotes.trim()
+        topicCovered: topicCovered.trim() || '',
+        notes: sessionNotes.trim() || ''
       });
 
       setSaveSuccess(true);
@@ -217,8 +232,8 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
         origin: { y: 0.8 }
       });
       setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (e) {
-      console.error('Failed to save record:', e);
+    } catch (error) {
+      console.error('Error saving attendance:', error);
     } finally {
       setSavingAttendance(false);
     }
@@ -582,7 +597,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                 {saveSuccess && (
                   <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 px-3 py-1.5 rounded-md border border-emerald-200 dark:border-emerald-800 animate-in fade-in">
                     <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                    Attendance & Marks Saved Successfully!
+                    Attendance saved successfully!
                   </span>
                 )}
               </div>
