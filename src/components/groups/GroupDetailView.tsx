@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import {
-  Group,
   Student,
   AttendanceStatus,
   AttendanceStatusMap,
   AttendanceMarksMap,
-  AttendanceCommentsMap,
-  AttendanceRecord
+  AttendanceCommentsMap
 } from '../../types';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
@@ -36,7 +34,6 @@ import {
   Edit2,
   Trash2,
   Phone,
-  FileText,
   CalendarCheck2,
   History,
   Check,
@@ -44,7 +41,6 @@ import {
   MessageCircle,
   Send,
   CalendarDays,
-  ArrowRightLeft,
   Archive
 } from 'lucide-react';
 
@@ -154,7 +150,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Group not found</h2>
         <button
           onClick={onBack}
-          className="mt-4 px-4 py-2 bg-slate-800 text-white rounded-xl text-xs font-semibold cursor-pointer transition-all hover:-translate-y-0.5 active:scale-95"
+          className="mt-4 px-4 py-2 bg-slate-800 text-white rounded-md text-xs font-semibold cursor-pointer transition-all hover:-translate-y-0.5 active:scale-95"
         >
           Return to Dashboard
         </button>
@@ -249,7 +245,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold shadow-xs transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold shadow-xs transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Groups</span>
@@ -259,7 +255,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsEditGroupOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-xs font-semibold shadow-xs transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-xs font-semibold shadow-xs transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>Edit Group Details</span>
@@ -269,7 +265,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
       </div>
 
       {/* Main Group Header Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-lg border-none p-5 sm:p-6 shadow-xs transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -296,72 +292,72 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
           <button
             type="button"
             onClick={() => setIsNotifyModalOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all hover:-translate-y-0.5 active:scale-95 self-start md:self-center cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all hover:-translate-y-0.5 active:scale-95 self-start md:self-center cursor-pointer"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-3.5 h-3.5" />
             <span>Send SMS to Parents</span>
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 dark:border-slate-800 mt-6 pt-4">
+        <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 dark:border-slate-800 mt-6 pt-4">
           <button
             onClick={() => setActiveTab('register')}
-            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
               activeTab === 'register'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
-            <CalendarCheck2 className="w-4 h-4" />
+            <CalendarCheck2 className="w-3.5 h-3.5" />
             <span>Attendance</span>
           </button>
 
           <button
             onClick={() => setActiveTab('monthly')}
-            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
               activeTab === 'monthly'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
-            <CalendarDays className="w-4 h-4" />
+            <CalendarDays className="w-3.5 h-3.5" />
             <span>Monthly Sheet</span>
           </button>
 
           <button
             onClick={() => setActiveTab('roster')}
-            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
               activeTab === 'roster'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
-            <Users className="w-4 h-4" />
+            <Users className="w-3.5 h-3.5" />
             <span>Students Roster ({groupStudents.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('history')}
-            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
               activeTab === 'history'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
-            <History className="w-4 h-4" />
+            <History className="w-3.5 h-3.5" />
             <span>Session Logs ({groupRecords.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('archive')}
-            className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
               activeTab === 'archive'
                 ? 'bg-indigo-600 text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
-            <Archive className="w-4 h-4" />
+            <Archive className="w-3.5 h-3.5" />
             <span>
               Group Archive (
               {groupActivityLogs.filter((l) => l.groupId === group.id).length}
@@ -375,11 +371,11 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
       {activeTab === 'register' && (
         <div className="space-y-6">
           {/* Action & Date control bar */}
-          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
+          <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-lg border-none shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
             {/* Date selector */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                <Calendar className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                <Calendar className="w-4 h-4" />
               </div>
               <div>
                 <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
@@ -398,7 +394,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
             <div className="flex items-center gap-1.5" id="attendance-summary-counters">
               {/* Red Box: Absent Count */}
               <div
-                className="min-w-[42px] h-9 px-3 rounded-xl bg-rose-600 text-white font-extrabold text-sm flex items-center justify-center shadow-xs select-none"
+                className="min-w-[38px] h-8 px-2.5 rounded-md bg-rose-600 text-white font-extrabold text-xs flex items-center justify-center shadow-xs select-none"
                 title="Absent"
               >
                 <AnimatedCounter value={absentCount} />
@@ -406,7 +402,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
 
               {/* White Box: Unlabeled / Unmarked Count */}
               <div
-                className="min-w-[42px] h-9 px-3 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-extrabold text-sm flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-xs select-none"
+                className="min-w-[38px] h-8 px-2.5 rounded-md bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-extrabold text-xs flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-xs select-none"
                 title="Unlabeled"
               >
                 <AnimatedCounter value={unmarkedCount} />
@@ -414,7 +410,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
 
               {/* Green Box: Present Count */}
               <div
-                className="min-w-[42px] h-9 px-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm flex items-center justify-center shadow-xs select-none"
+                className="min-w-[38px] h-8 px-2.5 rounded-md bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center shadow-xs select-none"
                 title="Present"
               >
                 <AnimatedCounter value={presentCount} />
@@ -423,8 +419,8 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
           </div>
 
           {/* Student attendance list table / cards */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
-            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30">
+          <div className="bg-white dark:bg-slate-900 rounded-lg border-none shadow-xs overflow-hidden transition-colors">
+            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30">
               <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <span>Attendance list ({totalRoster} Students)</span>
@@ -460,7 +456,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                       {/* Top Row: Name, Phone & Status Toggle */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold flex items-center justify-center shrink-0">
+                          <div className="w-6 h-6 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold flex items-center justify-center shrink-0">
                             {idx + 1}
                           </div>
                           <div>
@@ -485,7 +481,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                           <button
                             type="button"
                             onClick={() => handleStatusChange(student.id, 'present')}
-                            className={`py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                            className={`py-1.5 px-3.5 rounded-md text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
                               currentStatus === 'present'
                                 ? `bg-emerald-600 text-white shadow-xs ring-2 ring-emerald-600 ring-offset-1 dark:ring-offset-slate-900 ${
                                     isPulsing ? 'animate-pulse scale-105 ring-4 ring-emerald-400' : ''
@@ -493,7 +489,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300'
                             }`}
                           >
-                            <CheckCircle2 className="w-4 h-4" />
+                            <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Present</span>
                           </button>
 
@@ -501,23 +497,23 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                           <button
                             type="button"
                             onClick={() => handleStatusChange(student.id, 'absent')}
-                            className={`py-2 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                            className={`py-1.5 px-3.5 rounded-md text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
                               currentStatus === 'absent'
                                 ? 'bg-rose-600 text-white shadow-xs ring-2 ring-rose-600 ring-offset-1 dark:ring-offset-slate-900'
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-700 dark:hover:text-rose-300'
                             }`}
                           >
-                            <XCircle className="w-4 h-4" />
+                            <XCircle className="w-3.5 h-3.5" />
                             <span>Absent</span>
                           </button>
                         </div>
                       </div>
 
                       {/* Bottom Row: Mark Input & Teacher Comment Input */}
-                      <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 pt-1 pl-0 lg:pl-10">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 pt-1 pl-0 lg:pl-9">
                         {/* Mark Field */}
-                        <div className="md:col-span-3 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:bg-white dark:focus-within:bg-slate-800">
-                          <Award className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                        <div className="md:col-span-3 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:bg-white dark:focus-within:bg-slate-800">
+                          <Award className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
                           <div className="flex-1 flex items-center">
                             <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mr-1.5 shrink-0">
                               Mark:
@@ -536,8 +532,8 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                         </div>
 
                         {/* Comment Field */}
-                        <div className="md:col-span-9 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:bg-white dark:focus-within:bg-slate-800">
-                          <MessageCircle className="w-4 h-4 text-slate-400 shrink-0" />
+                        <div className="md:col-span-9 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:bg-white dark:focus-within:bg-slate-800">
+                          <MessageCircle className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <div className="flex-1 flex items-center">
                             <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mr-1.5 shrink-0">
                               Comment:
@@ -560,12 +556,12 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
           </div>
 
           {/* Action Footer: Save Attendance Register & Native SMS */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs transition-colors">
+          <div className="bg-white dark:bg-slate-900 rounded-lg border-none p-4 sm:p-5 shadow-xs transition-colors">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 {saveSuccess && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 px-3.5 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-in fade-in">
-                    <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 px-3 py-1.5 rounded-md border border-emerald-200 dark:border-emerald-800 animate-in fade-in">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     Attendance & Marks Saved Successfully!
                   </span>
                 )}
@@ -575,9 +571,9 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                 <button
                   type="button"
                   onClick={() => setIsNotifyModalOpen(true)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-2 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 cursor-pointer"
                 >
-                  <MessageSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <MessageSquare className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                   <span>Send SMS to Parents</span>
                 </button>
 
@@ -585,9 +581,9 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                   type="button"
                   onClick={handleSaveAttendance}
                   disabled={savingAttendance}
-                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-600/25 flex items-center gap-2 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 cursor-pointer"
+                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-xs sm:text-sm font-bold shadow-md shadow-indigo-600/25 flex items-center gap-2 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
-                  <Save className="w-4 h-4" />
+                  <Save className="w-3.5 h-3.5" />
                   <span>{savingAttendance ? 'Saving...' : 'Save Register'}</span>
                 </button>
               </div>
@@ -619,16 +615,16 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search students by name or parent phone..."
-                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none shadow-xs"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-xs sm:text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none shadow-xs"
               />
             </div>
 
             <div className="flex items-center gap-2.5">
               <button
                 onClick={() => setIsAddExistingModalOpen(true)}
-                className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-2xl text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-xs"
+                className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-md text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-xs"
               >
-                <UserCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <UserCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                 <span>Add Existing Student</span>
               </button>
 
@@ -637,9 +633,9 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                   setStudentToEdit(null);
                   setIsStudentModalOpen(true);
                 }}
-                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-bold shadow-md shadow-indigo-600/25 flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+                className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-xs font-bold shadow-md shadow-indigo-600/25 flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5" />
                 <span>Enroll New Student</span>
               </button>
             </div>
@@ -647,7 +643,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
 
           {/* Roster Cards Grid with Staggered Animation */}
           {filteredStudents.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border-none p-12 text-center shadow-xs">
               <p className="text-slate-500 dark:text-slate-400 text-sm">No students match your query.</p>
             </div>
           ) : (
@@ -661,7 +657,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: Math.min(idx * 0.03, 0.3) }}
-                    className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition-all flex flex-col justify-between"
+                    className="bg-white dark:bg-slate-900 rounded-md border-none p-5 shadow-xs hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col justify-between"
                   >
                     <div className="space-y-3">
                       <div className="flex items-start justify-between">
@@ -673,7 +669,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                             Enrolled: {student.enrolledDate || 'Active'}
                           </p>
                         </div>
-                        <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 uppercase tracking-wider">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 uppercase tracking-wider">
                           {student.status || 'Active'}
                         </span>
                       </div>
@@ -688,7 +684,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                         )}
 
                         {/* Parent contact */}
-                        <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+                        <div className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-md border border-slate-100 dark:border-slate-700/60 text-xs">
                           <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 font-mono">
                             <Phone className="w-3.5 h-3.5 text-slate-400" />
                             <span className="font-semibold">{student.parentPhone}</span>
@@ -705,20 +701,20 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                       </div>
 
                       {student.notes && (
-                        <p className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-md border border-slate-100 dark:border-slate-700/60">
                           {student.notes}
                         </p>
                       )}
                     </div>
 
                     {/* Actions */}
-                    <div className="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
+                    <div className="pt-3.5 mt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
                       <button
                         onClick={() => {
                           setStudentToEdit(student);
                           setIsStudentModalOpen(true);
                         }}
-                        className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
                       >
                         <Edit2 className="w-3 h-3" />
                         <span>Edit</span>
@@ -730,7 +726,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                             `${student.firstName} ${student.surname}`
                           )
                         }
-                        className="px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-850/80 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-md border border-amber-200 dark:border-amber-850/80 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
                         title="Remove student from this group"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -747,8 +743,8 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
 
       {/* ================= TAB 4: ATTENDANCE HISTORY & LOGS ================= */}
       {activeTab === 'history' && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs transition-colors">
-          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-950/40">
+        <div className="bg-white dark:bg-slate-900 rounded-lg border-none overflow-hidden shadow-xs transition-colors">
+          <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-950/40">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
               Historical Attendance Records ({groupRecords.length} Sessions)
             </h3>
@@ -762,7 +758,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
               No historical records found for this group yet.
             </div>
           ) : (
-            <div className="divide-y divide-slate-200 dark:divide-slate-800">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
               {groupRecords.map((rec, idx) => {
                 const pCount = Object.values(rec.statusMap || {}).filter((v) => v === 'present').length;
                 const aCount = Object.values(rec.statusMap || {}).filter((v) => v === 'absent').length;
@@ -776,7 +772,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: Math.min(idx * 0.02, 0.3) }}
-                    className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
+                    className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
                     onClick={() => {
                       setSelectedDate(rec.date);
                       setActiveTab('register');
@@ -823,7 +819,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
 
                       <button
                         type="button"
-                        className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+                        className="px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
                       >
                         Open Roll
                       </button>
@@ -882,7 +878,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
       <AddExistingStudentModal
         isOpen={isAddExistingModalOpen}
         onClose={() => setIsAddExistingModalOpen(false)}
-        currentGroup={group}
+        groupId={group.id}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
+import { AnimatedCounter } from '../common/AnimatedCounter';
 import {
   BarChart3,
   TrendingUp,
@@ -90,9 +91,9 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
   return (
     <div className="space-y-6 pb-20 md:pb-12 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 overflow-x-hidden">
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border-none shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full w-fit mb-1.5 border border-indigo-200 dark:border-indigo-800">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-md w-fit mb-1.5 border border-indigo-200 dark:border-indigo-800">
             <BarChart3 className="w-3.5 h-3.5" />
             <span>Attendance & Marks Telemetry</span>
           </div>
@@ -109,13 +110,13 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
             type="month"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 outline-none transition-colors"
+            className="px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 outline-none transition-colors"
           />
 
           <select
             value={selectedGroupFilter}
             onChange={(e) => setSelectedGroupFilter(e.target.value)}
-            className="px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 outline-none transition-colors"
+            className="px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 outline-none transition-colors"
           >
             <option value="all">All Learning Groups</option>
             {groups.map((g) => (
@@ -127,7 +128,7 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
 
           <button
             onClick={handleExportCSV}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-2 cursor-pointer"
+            className="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-2 cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Export CSV</span>
@@ -138,72 +139,82 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
       {/* Summary Rate Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Present */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border-none shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Present Marks</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" />
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Present Marks</span>
+            <div className="w-8 h-8 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4" strokeWidth={2.2} />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{totalPresences}</div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+              <AnimatedCounter value={totalPresences} durationMs={900} />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
               {totalEntries > 0 ? Math.round((totalPresences / totalEntries) * 100) : 0}% of all records
             </p>
           </div>
         </div>
 
         {/* Absent */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border-none shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Absent Marks</span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-              <XCircle className="w-4 h-4" />
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Absent Marks</span>
+            <div className="w-8 h-8 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+              <XCircle className="w-4 h-4" strokeWidth={2.2} />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400">{totalAbsences}</div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <div className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400">
+              <AnimatedCounter value={totalAbsences} durationMs={900} />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
               {totalEntries > 0 ? Math.round((totalAbsences / totalEntries) * 100) : 0}% missed sessions
             </p>
           </div>
         </div>
 
         {/* Average Mark / Grade */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border-none shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Average Mark</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-              <Award className="w-4 h-4" />
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Average Mark</span>
+            <div className="w-8 h-8 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <Award className="w-4 h-4" strokeWidth={2.2} />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              {averageMark !== null ? `${averageMark}` : 'N/A'}
+              {averageMark !== null ? (
+                <AnimatedCounter value={averageMark} decimals={1} durationMs={900} />
+              ) : (
+                'N/A'
+              )}
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
               Across {totalMarksCount} graded assessments
             </p>
           </div>
         </div>
 
         {/* Overall Attendance Efficiency */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border-none shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Attendance Rate</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Attendance Rate</span>
+            <div className="w-8 h-8 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" strokeWidth={2.2} />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{overallRate}%</div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Present vs Absent ratio</p>
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+              <AnimatedCounter value={overallRate} suffix="%" durationMs={1000} />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Present vs Absent ratio</p>
           </div>
         </div>
       </div>
 
       {/* Full Records Table */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-lg border-none overflow-hidden shadow-xs transition-colors">
         <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-950/40">
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">
             Recorded Session Registers ({filteredRecords.length} entries for {selectedMonth})

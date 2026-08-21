@@ -84,16 +84,16 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
     <div className="space-y-6 pb-20 md:pb-12 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 overflow-x-hidden">
       {/* Feedback Toast */}
       {feedbackToast && (
-        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-bold flex items-center gap-2 shadow-xs animate-in fade-in">
+        <div className="p-4 rounded-md bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-bold flex items-center gap-2 shadow-xs animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>{feedbackToast}</span>
         </div>
       )}
 
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border-none shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-full w-fit mb-1.5 border border-indigo-200 dark:border-indigo-800">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-full w-fit mb-1.5 border border-indigo-200/60 dark:border-indigo-800/60">
             <Users className="w-3.5 h-3.5" />
             <span>Master Register</span>
           </div>
@@ -109,7 +109,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
           <button
             onClick={handleAddNew}
             disabled={groups.length === 0}
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 shrink-0 cursor-pointer disabled:opacity-50"
+            className="px-4 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 shrink-0 cursor-pointer disabled:opacity-50"
           >
             <Plus className="w-4 h-4" />
             <span>Enroll Student</span>
@@ -118,7 +118,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border-none shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors">
         {/* Search input */}
         <div className="relative flex-1 w-full">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -129,7 +129,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search student by name (e.g. Daniel Kim)..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-medium text-slate-800 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-md text-xs sm:text-sm font-medium text-slate-800 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
           {searchQuery && (
             <button
@@ -147,7 +147,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
           <select
             value={selectedGroupFilter}
             onChange={(e) => setSelectedGroupFilter(e.target.value)}
-            className="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 outline-none flex-1 sm:flex-none"
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 outline-none flex-1 sm:flex-none"
           >
             <option value="all">All Groups ({students.length})</option>
             {unassignedCount > 0 && (
@@ -163,7 +163,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
           {/* Sort order */}
           <button
             onClick={() => setSortOrder(sortOrder === 'oldest' ? 'newest' : 'oldest')}
-            className="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 shrink-0 cursor-pointer"
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 shrink-0 cursor-pointer"
             title="Toggle chronological sort order"
           >
             <ArrowUpDown className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
@@ -175,10 +175,10 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
       </div>
 
       {/* Directory Table / Minimalist Flat List */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs transition-colors">
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-950/40">
+      <div className="bg-white dark:bg-slate-900 rounded-lg border-none overflow-hidden shadow-xs transition-colors">
+        <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-950/40">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+            <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
               {filteredStudents.length} {filteredStudents.length === 1 ? 'Student' : 'Students'}
             </span>
           </div>
@@ -193,13 +193,13 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-              <thead className="bg-slate-50 dark:bg-slate-950/50 text-slate-800 dark:text-slate-200 font-bold border-b border-slate-200 dark:border-slate-800 uppercase text-[10px] tracking-wider">
+              <thead className="bg-slate-50 dark:bg-slate-950/50 text-slate-800 dark:text-slate-200 font-bold border-b border-slate-100 dark:border-slate-800 uppercase text-[10px] tracking-wider">
                 <tr>
-                  <th className="px-6 py-3.5 w-16">#</th>
-                  <th className="px-6 py-3.5">Student Name</th>
+                  <th className="px-5 py-3 w-16">#</th>
+                  <th className="px-5 py-3">Student Name</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {filteredStudents.map((student, idx) => {
                   return (
                     <motion.tr
@@ -215,14 +215,14 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
                       onMouseLeave={() => setHoveredStudent(null)}
                       className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                     >
-                      <td className="px-6 py-4 text-slate-400 dark:text-slate-500 font-mono text-xs w-16">
+                      <td className="px-5 py-3 text-slate-400 dark:text-slate-500 font-mono text-xs w-16">
                         {idx + 1}
                       </td>
 
                       {/* Student Name */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-5 py-3 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
+                          <div className="w-8 h-8 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
                             {student.firstName.charAt(0)}
                             {student.surname.charAt(0)}
                           </div>
@@ -257,10 +257,10 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
               zIndex: 60,
               pointerEvents: 'none'
             }}
-            className="w-72 bg-slate-900/95 dark:bg-slate-950/95 text-white p-4 rounded-2xl shadow-2xl border border-slate-700/80 dark:border-slate-800 backdrop-blur-md space-y-2.5 text-xs select-none"
+            className="w-72 bg-slate-900/95 dark:bg-slate-950/95 text-white p-4 rounded-md shadow-2xl border border-slate-700/80 dark:border-slate-800 backdrop-blur-md space-y-2.5 text-xs select-none"
           >
             <div className="flex items-center gap-2.5 pb-2 border-b border-slate-800">
-              <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+              <div className="w-7 h-7 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
                 {hoveredStudent.student.firstName.charAt(0)}
                 {hoveredStudent.student.surname.charAt(0)}
               </div>

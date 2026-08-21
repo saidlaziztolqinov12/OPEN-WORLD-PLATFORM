@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
-import { User, Group } from '../../types';
+import { User } from '../../types';
 import { TeacherModal } from './TeacherModal';
 import {
   Users,
@@ -8,7 +8,6 @@ import {
   Mail,
   Phone,
   Edit2,
-  CalendarCheck2,
   ArrowRight
 } from 'lucide-react';
 
@@ -26,9 +25,9 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
   return (
     <div className="space-y-6 pb-20 md:pb-12 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 overflow-x-hidden">
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border-none shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full w-fit mb-1.5 border border-indigo-200 dark:border-indigo-800">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full w-fit mb-1.5 border border-indigo-200/60 dark:border-indigo-800/60">
             <Users className="w-3.5 h-3.5" />
             <span>Faculty Roster</span>
           </div>
@@ -45,7 +44,7 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
             setTeacherToEdit(null);
             setIsTeacherModalOpen(true);
           }}
-          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+          className="px-4 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Teacher</span>
@@ -69,15 +68,13 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
           return (
             <div
               key={teacher.id}
-              className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-md transition-all flex flex-col justify-between"
+              className="bg-white dark:bg-slate-900 rounded-md border-none p-5 sm:p-6 shadow-xs hover:-translate-y-1 hover:shadow-md transition-all duration-300 flex flex-col justify-between"
             >
               <div className="space-y-4">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3.5">
-                    <div
-                      className="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-xs"
-                    >
+                    <div className="w-11 h-11 rounded-md bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shadow-xs">
                       {teacher.firstName && teacher.surname
                         ? `${teacher.firstName.charAt(0)}${teacher.surname.charAt(0)}`
                         : teacher.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
@@ -86,7 +83,7 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
                       <div className="flex items-center gap-2">
                         <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{teacher.name}</h3>
                         {teacher.title && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
                             {teacher.title}
                           </span>
                         )}
@@ -100,7 +97,7 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
                       setTeacherToEdit(teacher);
                       setIsTeacherModalOpen(true);
                     }}
-                    className="p-2 rounded-xl text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-md text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                     title="Edit Teacher"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -108,7 +105,7 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
                 </div>
 
                 {/* Contact info */}
-                <div className="space-y-2 bg-slate-50 dark:bg-slate-800/70 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs">
+                <div className="space-y-2 bg-slate-50 dark:bg-slate-800/70 p-3 rounded-md border border-slate-100 dark:border-slate-700/60 text-xs">
                   <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
                     <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                     <span className="font-medium truncate">{teacher.email}</span>
@@ -121,15 +118,15 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
 
                 {/* Stats summary */}
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-md border border-slate-100 dark:border-slate-700/60">
                     <div className="text-base font-black text-slate-900 dark:text-white">{assignedGroups.length}</div>
                     <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Cohorts</div>
                   </div>
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-md border border-slate-100 dark:border-slate-700/60">
                     <div className="text-base font-black text-slate-900 dark:text-white">{teacherStudents.length}</div>
                     <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Students</div>
                   </div>
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-md border border-slate-100 dark:border-slate-700/60">
                     <div className="text-base font-black text-slate-900 dark:text-white">
                       {teacherLessonsThisMonth}
                     </div>
@@ -150,7 +147,7 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
                         <div
                           key={g.id}
                           onClick={() => onSelectGroup(g.id)}
-                          className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50/60 dark:hover:bg-indigo-950/40 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors cursor-pointer text-xs"
+                          className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50/60 dark:hover:bg-indigo-950/40 rounded-md border border-slate-100 dark:border-slate-700/60 transition-colors cursor-pointer text-xs"
                         >
                           <div>
                             <span className="font-bold text-slate-800 dark:text-slate-200">{g.name}</span>

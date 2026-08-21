@@ -44,11 +44,26 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [theme]);
 
   const toggleTheme = () => {
-    setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
+    // If browser supports View Transitions API, execute transition smoothly
+    const doc = document as unknown as { startViewTransition?: (callback: () => void) => void };
+    if (typeof document !== 'undefined' && typeof doc.startViewTransition === 'function') {
+      doc.startViewTransition(() => {
+        setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
+      });
+    } else {
+      setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
+    }
   };
 
   const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
+    const doc = document as unknown as { startViewTransition?: (callback: () => void) => void };
+    if (typeof document !== 'undefined' && typeof doc.startViewTransition === 'function') {
+      doc.startViewTransition(() => {
+        setThemeState(newTheme);
+      });
+    } else {
+      setThemeState(newTheme);
+    }
   };
 
   return (
