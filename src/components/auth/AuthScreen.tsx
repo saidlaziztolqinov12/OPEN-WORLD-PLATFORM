@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import {
-  GraduationCap,
-  Mail,
+  User as UserIcon,
   Lock,
-  ArrowRight,
   Eye,
   EyeOff,
   AlertCircle
@@ -28,41 +26,28 @@ export const AuthScreen: React.FC = () => {
 
     const result = loginWithCredentials(email, password, users);
     if (!result.success) {
-      setError(result.message || 'Invalid email or password. Please check your credentials.');
+      setError(result.message || 'Invalid login or password. Please check your credentials.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-100 flex flex-col justify-start pt-20 sm:pt-0 sm:justify-center pb-10 px-4 sm:px-6 lg:px-8 text-slate-800">
-      {/* Brand Header */}
-      <div className="mx-4 sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
-          <GraduationCap className="w-9 h-9" />
-        </div>
-        <h1 className="mt-4 text-3xl font-black text-slate-900 tracking-tight">
-          Open World
-        </h1>
-        <p className="mt-1 text-sm text-slate-600 font-medium">
-          Learning Center Management Platform
-        </p>
-      </div>
-
+    <div className="min-h-[100dvh] bg-slate-100 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-slate-800">
       {/* Main Login Card */}
-      <div className="mt-8 mx-4 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 sm:px-10 shadow-xl shadow-slate-300/40 rounded-3xl border border-slate-200">
+      <div className="mx-auto w-full max-w-sm sm:max-w-md">
+        <div className="bg-white py-8 px-6 sm:px-9 shadow-lg shadow-slate-200/60 rounded-2xl border border-slate-200/80">
           <div className="mb-6 text-center">
-            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
-              Sign In to Workspace
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Sign In
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Enter your registered staff email address and password
+              Please enter your credentials to continue
             </p>
           </div>
 
           {/* Error Banner */}
           {error && (
-            <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium flex items-start gap-2.5 animate-in fade-in duration-200">
+            <div className="mb-5 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium flex items-start gap-2.5 animate-in fade-in duration-200">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -71,28 +56,28 @@ export const AuthScreen: React.FC = () => {
           {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-800 mb-1.5">
-                Work Email
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                Login
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
+                  <UserIcon className="w-4 h-4" />
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   required
                   autoFocus
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@center.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                  placeholder="Enter your login"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-normal text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-slate-800">
+                <label className="block text-xs font-semibold text-slate-700">
                   Password
                 </label>
               </div>
@@ -105,13 +90,13 @@ export const AuthScreen: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                  placeholder="Enter your password"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-normal text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 outline-none transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -121,10 +106,9 @@ export const AuthScreen: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl text-sm shadow-md shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold py-2.5 px-4 rounded-xl text-sm shadow-sm transition-all flex items-center justify-center cursor-pointer disabled:opacity-50"
             >
-              <span>Sign In</span>
-              <ArrowRight className="w-4 h-4" />
+              Sign In
             </button>
           </form>
         </div>

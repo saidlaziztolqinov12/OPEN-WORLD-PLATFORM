@@ -95,15 +95,15 @@ const MainApp: React.FC = () => {
       />
 
       {/* Mobile Top Header (Small screens only) */}
-      <div className="md:hidden sticky top-0 z-30 bg-slate-900 dark:bg-slate-950 text-white px-4 py-3 border-b border-slate-800 flex items-center justify-between shadow-md">
+      <div className="md:hidden sticky top-0 z-30 bg-white dark:bg-slate-900 text-slate-800 dark:text-white px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-            <GraduationCap className="w-5 h-5" />
+          <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+            <GraduationCap className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-sm text-white">Open World</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/50 uppercase">
+              <span className="font-bold text-sm text-slate-900 dark:text-white">Open World</span>
+              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 uppercase">
                 {isAdmin ? 'Admin' : 'Teacher'}
               </span>
             </div>
@@ -116,14 +116,14 @@ const MainApp: React.FC = () => {
             id="mobile-theme-toggle-btn"
             type="button"
             onClick={toggleTheme}
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-600 transition-all active:scale-95 cursor-pointer flex items-center justify-center"
-            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
+            title={isDark ? 'Switch to Day Mode' : 'Switch to Night Mode'}
             aria-label="Toggle night/day mode"
           >
             {isDark ? (
-              <Sun className="w-5 h-5 text-amber-400" />
+              <Sun className="w-4 h-4 text-amber-500" />
             ) : (
-              <Moon className="w-5 h-5 text-indigo-300" />
+              <Moon className="w-4 h-4 text-indigo-400" />
             )}
           </button>
 
@@ -132,19 +132,19 @@ const MainApp: React.FC = () => {
             id="mobile-menu-toggle-btn"
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 cursor-pointer flex items-center justify-center transition-all active:scale-95"
+            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 cursor-pointer flex items-center justify-center transition-colors active:scale-95"
             aria-label="Toggle mobile menu"
           >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex flex-col justify-end">
-          <div className="bg-slate-900 text-white rounded-t-3xl border-t border-slate-800 p-6 space-y-4 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="md:hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex flex-col justify-end">
+          <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-t-2xl border-t border-slate-200 dark:border-slate-800 p-5 space-y-3 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-200 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
                   {currentUser.firstName && currentUser.surname
@@ -154,23 +154,23 @@ const MainApp: React.FC = () => {
                     : 'ME'}
                 </div>
                 <div>
-                  <div className="text-sm font-bold">{currentUser.name}</div>
-                  <div className="text-[11px] text-slate-400">{currentUser.email}</div>
+                  <div className="text-sm font-semibold">{currentUser.name}</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400">{currentUser.email}</div>
                 </div>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Mobile Nav Links */}
-            <div className="space-y-2">
+            <div className="space-y-1">
               <button
                 onClick={handleOpenAddStudent}
-                className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-indigo-600/30 cursor-pointer"
+                className="w-full py-2 px-3 mb-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
               >
                 <span>+ Enroll New Student</span>
               </button>
@@ -179,75 +179,75 @@ const MainApp: React.FC = () => {
                 <>
                   <button
                     onClick={() => handleSidebarTabSelect('admin-dashboard')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'admin-dashboard' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'admin-dashboard' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Dashboard (Overview & Groups)
                   </button>
                   <button
                     onClick={() => handleSidebarTabSelect('admin-students')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'admin-students' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'admin-students' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     All Students Directory
                   </button>
                   <button
                     onClick={() => handleSidebarTabSelect('teachers')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'teachers' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'teachers' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Teachers Roster
                   </button>
                   <button
                     onClick={() => handleSidebarTabSelect('analytics')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'analytics' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'analytics' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Center Analytics
                   </button>
                   <button
                     onClick={() => handleSidebarTabSelect('inbox')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'inbox' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'inbox' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    Inbox & Transfer Requests
+                    Inbox & Requests
                   </button>
                 </>
               ) : (
                 <>
                   <button
                     onClick={() => handleSidebarTabSelect('teacher-dashboard')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'teacher-dashboard' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'teacher-dashboard' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Dashboard (My Groups)
                   </button>
                   <button
                     onClick={() => handleSidebarTabSelect('teacher-students')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'teacher-students' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'teacher-students' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     My Students Roster
                   </button>
                   <button
                     onClick={() => handleSidebarTabSelect('teacher-attendance-history')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'teacher-attendance-history' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'teacher-attendance-history' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Attendance Log
                   </button>
                   <button
                     onClick={() => handleSidebarTabSelect('inbox')}
-                    className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-semibold ${
-                      activeTab === 'inbox' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs font-medium ${
+                      activeTab === 'inbox' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Center Inbox
@@ -257,15 +257,15 @@ const MainApp: React.FC = () => {
             </div>
 
             {/* Mobile Logout Button */}
-            <div className="pt-3 border-t border-slate-800">
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   setIsMobileLogoutModalOpen(true);
                 }}
-                className="w-full py-2.5 px-4 rounded-xl bg-rose-950/50 text-rose-300 border border-rose-800/40 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2 px-3 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <LogOut className="w-4 h-4 text-rose-400" />
+                <LogOut className="w-4 h-4 text-rose-500" />
                 <span>Log Out</span>
               </button>
             </div>

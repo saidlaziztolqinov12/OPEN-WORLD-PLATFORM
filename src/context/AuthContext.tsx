@@ -77,9 +77,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, message: 'Please enter both email and password.' };
     }
 
-    // 1. Check hardcoded Default Admin login (admin@center.com / admin123)
+    // 1. Check hardcoded Default Admin login (admin@center.com / admin / admin123)
     if (
-      (trimmedEmail === 'admin@center.com' || trimmedEmail === 'admin@openworld.edu' || trimmedEmail === 'admin@edupulse.edu') &&
+      (trimmedEmail === 'admin@center.com' || trimmedEmail === 'admin' || trimmedEmail === 'director' || trimmedEmail === 'admin@openworld.edu' || trimmedEmail === 'admin@edupulse.edu') &&
       trimmedPassword === 'admin123'
     ) {
       const foundAdmin = registeredUsers.find((u) => u.role === 'admin');
@@ -98,13 +98,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // 2. Check registered users (from Firestore / DataContext or INITIAL_USERS)
     const combinedUsers = [...registeredUsers, ...INITIAL_USERS];
     const matchedUser = combinedUsers.find(
-      (u) => u.email.toLowerCase() === trimmedEmail
+      (u) =>
+        u.email.toLowerCase() === trimmedEmail ||
+        u.name.toLowerCase() === trimmedEmail ||
+        (u.firstName && u.firstName.toLowerCase() === trimmedEmail)
     );
 
     if (!matchedUser) {
       return {
         success: false,
-        message: 'No account found with this email. Please check your spelling.'
+        message: 'No account found with this login. Please check your spelling.'
       };
     }
 
