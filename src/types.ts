@@ -58,6 +58,7 @@ export type StudentStatus = 'active' | 'inactive' | 'transferred';
 
 export interface Student {
   id: string;
+  studentId?: string; // 5-digit unique ID (10000-99999)
   groupId: string | null;
   firstName: string;
   surname: string;

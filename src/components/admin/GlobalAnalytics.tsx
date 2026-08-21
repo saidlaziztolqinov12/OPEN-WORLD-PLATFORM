@@ -148,7 +148,7 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
-              <AnimatedCounter value={totalPresences} durationMs={900} />
+              <AnimatedCounter value={totalPresences} durationMs={3000} />
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
               {totalEntries > 0 ? Math.round((totalPresences / totalEntries) * 100) : 0}% of all records
@@ -166,7 +166,7 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400">
-              <AnimatedCounter value={totalAbsences} durationMs={900} />
+              <AnimatedCounter value={totalAbsences} durationMs={3000} />
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
               {totalEntries > 0 ? Math.round((totalAbsences / totalEntries) * 100) : 0}% missed sessions
@@ -185,7 +185,7 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
               {averageMark !== null ? (
-                <AnimatedCounter value={averageMark} decimals={1} durationMs={900} />
+                <AnimatedCounter value={averageMark} decimals={1} durationMs={3000} />
               ) : (
                 'N/A'
               )}
@@ -206,7 +206,7 @@ export const GlobalAnalytics: React.FC<GlobalAnalyticsProps> = ({ onSelectGroup 
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              <AnimatedCounter value={overallRate} suffix="%" durationMs={1000} />
+              <AnimatedCounter value={overallRate} suffix="%" durationMs={3000} />
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Present vs Absent ratio</p>
           </div>

@@ -2,14 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Sun, Moon, LogOut, ShieldCheck, User } from 'lucide-react';
+import { Sun, Moon, LogOut, ShieldCheck, User, BarChart2 } from 'lucide-react';
 import { LogoutConfirmModal } from './LogoutConfirmModal';
 
 interface TopBarProps {
   activeTabTitle?: string;
+  onOpenTeacherActivity?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ activeTabTitle }) => {
+export const TopBar: React.FC<TopBarProps> = ({ activeTabTitle, onOpenTeacherActivity }) => {
   const { currentUser, isAdmin, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -137,7 +138,21 @@ export const TopBar: React.FC<TopBarProps> = ({ activeTabTitle }) => {
                 </div>
 
                 {/* Dropdown Menu Items */}
-                <div className="p-1">
+                <div className="p-1 space-y-0.5">
+                  {onOpenTeacherActivity && (
+                    <button
+                      id="dropdown-activity-btn"
+                      type="button"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        onOpenTeacherActivity();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors font-medium text-left cursor-pointer"
+                    >
+                      <BarChart2 className="w-4 h-4 text-indigo-500 shrink-0" />
+                      <span>See Activity</span>
+                    </button>
+                  )}
                   <button
                     id="dropdown-logout-btn"
                     type="button"

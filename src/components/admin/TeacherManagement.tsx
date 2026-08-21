@@ -8,19 +8,36 @@ import {
   Mail,
   Phone,
   Edit2,
-  ArrowRight
+  ArrowRight,
+  Trash2,
+  AlertTriangle,
+  X
 } from 'lucide-react';
 
 interface TeacherManagementProps {
   onSelectGroup: (groupId: string) => void;
+  onSelectTeacher: (teacherId: string) => void;
 }
 
-export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGroup }) => {
-  const { teachers, groups, students, attendanceRecords } = useData();
+export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGroup, onSelectTeacher }) => {
+  const { teachers, groups, deleteTeacher } = useData();
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [teacherToEdit, setTeacherToEdit] = useState<User | null>(null);
+  const [teacherToDelete, setTeacherToDelete] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const currentMonthStr = new Date().toISOString().substring(0, 7);
+  const handleDeleteTeacherConfirm = async () => {
+    if (!teacherToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteTeacher(teacherToDelete.id);
+      setTeacherToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete teacher:', err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="space-y-6 pb-20 md:pb-12 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 overflow-x-hidden">
@@ -55,15 +72,6 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {teachers.map((teacher) => {
           const assignedGroups = groups.filter((g) => g.teacherId === teacher.id && !g.archived);
-          const assignedGroupIds = new Set(assignedGroups.map((g) => g.id));
-          const teacherStudents = students.filter(
-            (s) => assignedGroupIds.has(s.groupId) && s.status !== 'inactive'
-          );
-
-          // Monthly lessons done across all groups of this teacher
-          const teacherLessonsThisMonth = attendanceRecords.filter(
-            (r) => assignedGroupIds.has(r.groupId) && r.date.startsWith(currentMonthStr)
-          ).length;
 
           return (
             <div
@@ -92,16 +100,15 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setTeacherToEdit(teacher);
-                      setIsTeacherModalOpen(true);
-                    }}
-                    className="p-1.5 rounded-md text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                    title="Edit Teacher"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setTeacherToDelete(teacher)}
+                      className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
+                      title="Delete Teacher"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Contact info */}
@@ -116,49 +123,24 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
                   </div>
                 </div>
 
-                {/* Stats summary */}
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-md border border-slate-100 dark:border-slate-700/60">
-                    <div className="text-base font-black text-slate-900 dark:text-white">{assignedGroups.length}</div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Cohorts</div>
-                  </div>
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-md border border-slate-100 dark:border-slate-700/60">
-                    <div className="text-base font-black text-slate-900 dark:text-white">{teacherStudents.length}</div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Students</div>
-                  </div>
-                  <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-md border border-slate-100 dark:border-slate-700/60">
-                    <div className="text-base font-black text-slate-900 dark:text-white">
-                      {teacherLessonsThisMonth}
-                    </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Sessions Logged</div>
-                  </div>
+                {/* Assigned Groups Count */}
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/60 rounded-md border border-slate-100 dark:border-slate-700/60">
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Assigned Cohorts</span>
+                  <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">
+                    {assignedGroups.length} Active
+                  </span>
                 </div>
+              </div>
 
-                {/* Assigned Groups list */}
-                <div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
-                    Assigned Cohorts ({assignedGroups.length})
-                  </div>
-                  {assignedGroups.length === 0 ? (
-                    <p className="text-xs text-slate-400 italic">No groups assigned to this instructor.</p>
-                  ) : (
-                    <div className="space-y-1.5">
-                      {assignedGroups.map((g) => (
-                        <div
-                          key={g.id}
-                          onClick={() => onSelectGroup(g.id)}
-                          className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50/60 dark:hover:bg-indigo-950/40 rounded-md border border-slate-100 dark:border-slate-700/60 transition-colors cursor-pointer text-xs"
-                        >
-                          <div>
-                            <span className="font-bold text-slate-800 dark:text-slate-200">{g.name}</span>
-                            <span className="text-slate-500 dark:text-slate-400 ml-1.5 font-normal">({g.schedule})</span>
-                          </div>
-                          <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              {/* View Profile Button */}
+              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  onClick={() => onSelectTeacher(teacher.id)}
+                  className="w-full py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>View Profile & Analytics</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           );
@@ -174,6 +156,52 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
         }}
         teacherToEdit={teacherToEdit}
       />
+
+      {/* Delete Confirmation Modal */}
+      {teacherToDelete && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <button
+                onClick={() => setTeacherToDelete(null)}
+                className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                Delete Instructor Account?
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                Are you sure you want to delete <span className="font-bold text-slate-800 dark:text-slate-200">{teacherToDelete.name}</span>? This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setTeacherToDelete(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleDeleteTeacherConfirm}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/25 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Teacher'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

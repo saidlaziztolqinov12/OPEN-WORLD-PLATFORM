@@ -13,6 +13,7 @@ import { TopBar } from './components/common/TopBar';
 import { MobileNav } from './components/common/MobileNav';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { TeacherManagement } from './components/admin/TeacherManagement';
+import { TeacherProfileView } from './components/admin/TeacherProfileView';
 import { GlobalAnalytics } from './components/admin/GlobalAnalytics';
 import { AllStudentsDirectory } from './components/admin/AllStudentsDirectory';
 import { TeacherDashboard } from './components/teacher/TeacherDashboard';
@@ -24,7 +25,7 @@ import { InboxView } from './components/notifications/InboxView';
 
 const MainApp: React.FC = () => {
   const { currentUser, isAdmin, isTeacher } = useAuth();
-  const { groups } = useData();
+  const { groups, teachers } = useData();
 
   // Navigation tab state
   const [activeTab, setActiveTab] = useState<string>(
@@ -36,6 +37,7 @@ const MainApp: React.FC = () => {
 
   // Group detail drilldown state
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
 
   // Global Add Student modal state (triggered from views)
   const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState<boolean>(false);
@@ -61,8 +63,17 @@ const MainApp: React.FC = () => {
     setSelectedGroupId(null);
   };
 
+  const handleSelectTeacher = (teacherId: string) => {
+    setSelectedTeacherId(teacherId);
+  };
+
+  const handleBackFromTeacher = () => {
+    setSelectedTeacherId(null);
+  };
+
   const handleSidebarTabSelect = (tab: string) => {
     setSelectedGroupId(null);
+    setSelectedTeacherId(null);
     setActiveTab(tab);
   };
 
@@ -80,6 +91,10 @@ const MainApp: React.FC = () => {
     if (selectedGroupId) {
       const group = groups.find((g) => g.id === selectedGroupId);
       return group ? `${group.name}` : 'Cohort Details';
+    }
+    if (selectedTeacherId) {
+      const teacher = teachers.find((t) => t.id === selectedTeacherId);
+      return teacher ? `${teacher.name}'s Profile` : 'Teacher Profile';
     }
     switch (activeTab) {
       case 'admin-dashboard':
@@ -116,7 +131,10 @@ const MainApp: React.FC = () => {
       {/* Main Wrapper with Top Navigation Bar and Content */}
       <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         {/* Top Navigation Bar */}
-        <TopBar activeTabTitle={getTabTitle()} />
+        <TopBar
+          activeTabTitle={getTabTitle()}
+          onOpenTeacherActivity={isTeacher && currentUser ? () => setSelectedTeacherId(currentUser.id) : undefined}
+        />
 
         {/* Main Content Area */}
         <main className="flex-1 h-full overflow-y-auto min-w-0 w-full overflow-x-hidden flex flex-col px-3 sm:px-6 lg:px-8 py-6 pb-24 md:pb-6">
@@ -124,6 +142,13 @@ const MainApp: React.FC = () => {
             <GroupDetailView
               groupId={selectedGroupId}
               onBack={handleBackFromGroup}
+            />
+          ) : selectedTeacherId ? (
+            <TeacherProfileView
+              teacherId={selectedTeacherId}
+              onBack={handleBackFromTeacher}
+              onSelectGroup={handleSelectGroup}
+              isReadOnly={!isAdmin}
             />
           ) : (
             <>
@@ -142,7 +167,10 @@ const MainApp: React.FC = () => {
                     <AllStudentsDirectory onSelectGroup={handleSelectGroup} />
                   )}
                   {activeTab === 'teachers' && (
-                    <TeacherManagement onSelectGroup={handleSelectGroup} />
+                    <TeacherManagement
+                      onSelectGroup={handleSelectGroup}
+                      onSelectTeacher={handleSelectTeacher}
+                    />
                   )}
                   {activeTab === 'analytics' && (
                     <GlobalAnalytics onSelectGroup={handleSelectGroup} />

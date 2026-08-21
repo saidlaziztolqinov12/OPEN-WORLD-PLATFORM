@@ -29,6 +29,7 @@ import {
   seedInitialFirestoreData
 } from '../lib/seedData';
 import { useAuth } from './AuthContext';
+import { generateUniqueStudentId } from '../utils/studentId';
 
 interface DataContextType {
   users: User[];
@@ -54,6 +55,8 @@ interface DataContextType {
   deleteAttendanceRecord: (id: string) => Promise<void>;
   addTeacher: (teacher: Omit<User, 'id' | 'createdAt'>) => Promise<string>;
   updateTeacher: (id: string, teacher: Partial<User>) => Promise<void>;
+  deleteTeacher: (id: string) => Promise<void>;
+  migrateMissingStudentIds: () => Promise<number>;
   sendNotification: (notif: Omit<InternalNotification, 'id' | 'createdAt' | 'read' | 'readBy'>) => Promise<string>;
   markNotificationAsRead: (id: string, userId?: string) => Promise<void>;
   markAllNotificationsAsRead: (userId?: string) => Promise<void>;
@@ -383,9 +386,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addStudent = async (studentData: Omit<Student, 'id'>): Promise<string> => {
     const id = `student-${Date.now()}`;
+    const studentId = studentData.studentId || generateUniqueStudentId(students);
     const newStudent: Student = {
       ...studentData,
       id,
+      studentId,
       status: studentData.status || 'active'
     };
 
@@ -410,6 +415,32 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     return id;
+  };
+
+  const migrateMissingStudentIds = async (): Promise<number> => {
+    let count = 0;
+    const currentStudents = [...students];
+    const updatedStudents = currentStudents.map((s) => {
+      if (!s.studentId || s.studentId.length !== 5 || isNaN(Number(s.studentId))) {
+        const newId = generateUniqueStudentId(currentStudents);
+        s.studentId = newId;
+        count++;
+        return { ...s, studentId: newId };
+      }
+      return s;
+    });
+
+    if (count > 0) {
+      setStudents(updatedStudents);
+      for (const s of updatedStudents) {
+        try {
+          await updateDoc(doc(db, 'students', s.id), { studentId: s.studentId });
+        } catch (e) {
+          console.warn('Firestore migration notice for student:', s.id, e);
+        }
+      }
+    }
+    return count;
   };
 
   const updateStudent = async (id: string, studentData: Partial<Student>): Promise<void> => {
@@ -572,6 +603,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await updateDoc(doc(db, 'users', id), teacherData);
     } catch (e) {
       console.warn('Firestore write notice for updateTeacher:', e);
+    }
+  };
+
+  const deleteTeacher = async (id: string): Promise<void> => {
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+    try {
+      await deleteDoc(doc(db, 'users', id));
+    } catch (e) {
+      console.warn('Firestore delete notice for deleteTeacher:', e);
     }
   };
 
@@ -928,6 +968,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteAttendanceRecord,
         addTeacher,
         updateTeacher,
+        deleteTeacher,
+        migrateMissingStudentIds,
         sendNotification,
         markNotificationAsRead,
         markAllNotificationsAsRead,

@@ -4,6 +4,7 @@ import { useData } from '../../context/DataContext';
 import { Student } from '../../types';
 import { StudentModal } from '../students/StudentModal';
 import { TransferStudentModal } from '../students/TransferStudentModal';
+import { StudentProfileDrawer } from '../students/StudentProfileDrawer';
 import {
   Users,
   Search,
@@ -13,7 +14,8 @@ import {
   BookOpen,
   Calendar,
   Phone,
-  FileText
+  FileText,
+  MoreVertical
 } from 'lucide-react';
 
 interface AllStudentsDirectoryProps {
@@ -31,13 +33,10 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [studentToTransfer, setStudentToTransfer] = useState<Student | null>(null);
   const [targetGroupId, setTargetGroupId] = useState<string>(groups[0]?.id || '');
+  const [profileDrawerStudent, setProfileDrawerStudent] = useState<Student | null>(null);
+  const [activeMenuStudentId, setActiveMenuStudentId] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null);
   const [feedbackToast] = useState<string | null>(null);
-
-  // Floating hover card state
-  const [hoveredStudent, setHoveredStudent] = useState<{
-    student: Student;
-    rect: DOMRect;
-  } | null>(null);
 
   const unassignedCount = useMemo(() => {
     return students.filter((s) => !s.groupId).length;
@@ -197,6 +196,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
                 <tr>
                   <th className="px-5 py-3 w-16">#</th>
                   <th className="px-5 py-3">Student Name</th>
+                  <th className="px-5 py-3 text-right sticky right-0 bg-slate-50 dark:bg-slate-950/90 z-10 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.05)]">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
@@ -207,13 +207,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.15, delay: Math.min(idx * 0.015, 0.25) }}
-                      onClick={() => handleEdit(student)}
-                      onMouseEnter={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        setHoveredStudent({ student, rect });
-                      }}
-                      onMouseLeave={() => setHoveredStudent(null)}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
                     >
                       <td className="px-5 py-3 text-slate-400 dark:text-slate-500 font-mono text-xs w-16">
                         {idx + 1}
@@ -229,8 +223,35 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
                           <div>
                             <div className="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                               <span>{student.firstName} {student.surname}</span>
+                              <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded">
+                                #{student.studentId || student.id.slice(-5)}
+                              </span>
                             </div>
                           </div>
+                        </div>
+                      </td>
+
+                      {/* Actions 3-dot menu */}
+                      <td className="px-5 py-3 text-right whitespace-nowrap relative sticky right-0 bg-white dark:bg-slate-900 z-10 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.05)]" onClick={(e) => e.stopPropagation()}>
+                        <div className="relative inline-block text-left">
+                          <button
+                            onClick={(e) => {
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              if (activeMenuStudentId === student.id) {
+                                setActiveMenuStudentId(null);
+                                setMenuPosition(null);
+                              } else {
+                                setActiveMenuStudentId(student.id);
+                                setMenuPosition({
+                                  top: rect.bottom + 4,
+                                  right: window.innerWidth - rect.right
+                                });
+                              }
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </motion.tr>
@@ -242,83 +263,51 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
         )}
       </div>
 
-      {/* Floating Hover Tooltip Card */}
-      <AnimatePresence>
-        {hoveredStudent && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 4 }}
-            transition={{ duration: 0.12, ease: 'easeOut' }}
+      {/* Global Fixed Action Menu Dropdown */}
+      {activeMenuStudentId && menuPosition && (
+        <>
+          <div
+            className="fixed inset-0 z-[99999]"
+            onClick={() => {
+              setActiveMenuStudentId(null);
+              setMenuPosition(null);
+            }}
+          />
+          <div
             style={{
               position: 'fixed',
-              top: Math.max(16, Math.min(window.innerHeight - 240, hoveredStudent.rect.top - 8)),
-              left: Math.min(window.innerWidth - 320, hoveredStudent.rect.left + Math.min(hoveredStudent.rect.width * 0.35, 300)),
-              zIndex: 60,
-              pointerEvents: 'none'
+              top: menuPosition.top,
+              right: menuPosition.right,
+              zIndex: 100000
             }}
-            className="w-72 bg-slate-900/95 dark:bg-slate-950/95 text-white p-4 rounded-md shadow-2xl border border-slate-700/80 dark:border-slate-800 backdrop-blur-md space-y-2.5 text-xs select-none"
+            className="w-44 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 py-1.5 text-left"
           >
-            <div className="flex items-center gap-2.5 pb-2 border-b border-slate-800">
-              <div className="w-7 h-7 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                {hoveredStudent.student.firstName.charAt(0)}
-                {hoveredStudent.student.surname.charAt(0)}
-              </div>
-              <div className="font-bold text-sm text-white truncate">
-                {hoveredStudent.student.firstName} {hoveredStudent.student.surname}
-              </div>
-            </div>
-
-            <div className="space-y-2 text-[11px]">
-              <div className="flex items-start justify-between gap-2">
-                <span className="text-slate-400 font-medium flex items-center gap-1.5 shrink-0">
-                  <BookOpen className="w-3 h-3 text-indigo-400" />
-                  <span>Group:</span>
-                </span>
-                <span className="font-semibold text-slate-100 truncate text-right">
-                  {groups.find((g) => g.id === hoveredStudent.student.groupId)?.name || 'Unassigned'}
-                </span>
-              </div>
-
-              <div className="flex items-start justify-between gap-2">
-                <span className="text-slate-400 font-medium flex items-center gap-1.5 shrink-0">
-                  <Calendar className="w-3 h-3 text-indigo-400" />
-                  <span>Birthdate:</span>
-                </span>
-                <span className="font-semibold text-slate-100">
-                  {hoveredStudent.student.birthDate
-                    ? new Date(hoveredStudent.student.birthDate).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })
-                    : 'Not specified'}
-                </span>
-              </div>
-
-              <div className="flex items-start justify-between gap-2">
-                <span className="text-slate-400 font-medium flex items-center gap-1.5 shrink-0">
-                  <Phone className="w-3 h-3 text-indigo-400" />
-                  <span>Phone:</span>
-                </span>
-                <span className="font-semibold font-mono text-indigo-300">
-                  {hoveredStudent.student.parentPhone || '—'}
-                </span>
-              </div>
-
-              <div className="pt-2 border-t border-slate-800/80">
-                <span className="text-slate-400 font-medium flex items-center gap-1.5 mb-1">
-                  <FileText className="w-3 h-3 text-indigo-400" />
-                  <span>Teacher Note:</span>
-                </span>
-                <p className="text-slate-300 italic text-[11px] leading-relaxed line-clamp-3">
-                  {hoveredStudent.student.notes ? hoveredStudent.student.notes : 'None'}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <button
+              onClick={() => {
+                const targetStudent = students.find((s) => s.id === activeMenuStudentId);
+                setActiveMenuStudentId(null);
+                setMenuPosition(null);
+                if (targetStudent) setProfileDrawerStudent(targetStudent);
+              }}
+              className="w-full px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 flex items-center gap-2 transition-colors cursor-pointer"
+            >
+              <Users className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Check Profile</span>
+            </button>
+            <button
+              onClick={() => {
+                const targetStudent = students.find((s) => s.id === activeMenuStudentId);
+                setActiveMenuStudentId(null);
+                setMenuPosition(null);
+                if (targetStudent) handleEdit(targetStudent);
+              }}
+              className="w-full px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 transition-colors cursor-pointer"
+            >
+              <span>Edit Student</span>
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Student Enrollment / Edit Modal */}
       <StudentModal
@@ -339,6 +328,13 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
           setStudentToTransfer(null);
         }}
         student={studentToTransfer}
+      />
+
+      {/* Student Profile Drawer */}
+      <StudentProfileDrawer
+        isOpen={Boolean(profileDrawerStudent)}
+        onClose={() => setProfileDrawerStudent(null)}
+        student={profileDrawerStudent}
       />
     </div>
   );

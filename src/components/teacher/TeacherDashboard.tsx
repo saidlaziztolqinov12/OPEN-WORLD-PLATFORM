@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { Group } from '../../types';
 import { GroupModal } from '../groups/GroupModal';
+import { CohortAnalyticsChart } from './CohortAnalyticsChart';
 import {
   BookOpen,
   CalendarCheck2,
@@ -10,7 +11,9 @@ import {
   Plus,
   Clock,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  BarChart2,
+  Calendar
 } from 'lucide-react';
 
 interface TeacherDashboardProps {
@@ -23,8 +26,25 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   onNavigateStudents
 }) => {
   const { currentUser } = useAuth();
-  const { groups, students } = useData();
+  const { groups, students, attendanceRecords } = useData();
   const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
+
+  // Generate past 12 months options (e.g., "2026-08" -> "August 2026")
+  const monthOptions = useMemo(() => {
+    const opts: { value: string; label: string }[] = [];
+    const date = new Date();
+    for (let i = 0; i < 12; i++) {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const value = `${year}-${String(month + 1).padStart(2, '0')}`;
+      const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      opts.push({ value, label });
+      date.setMonth(date.getMonth() - 1);
+    }
+    return opts;
+  }, []);
+
+  const [selectedYearMonth, setSelectedYearMonth] = useState<string>(monthOptions[0]?.value || '2026-08');
 
   // Filter groups strictly assigned to this teacher (or created by this teacher)
   const myGroups = groups.filter(
@@ -38,7 +58,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const currentMonthName = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
-    <div className="space-y-6 pb-20 md:pb-12 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 overflow-x-hidden">
+    <div className="space-y-8 pb-20 md:pb-12 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 overflow-x-hidden">
       {/* Teacher Hero Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950 rounded-lg p-6 sm:p-7 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden border-none">
         <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -166,3 +186,4 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
     </div>
   );
 };
+

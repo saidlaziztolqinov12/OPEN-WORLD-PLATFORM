@@ -42,12 +42,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     attendanceRecords,
     archiveGroup,
     deleteGroup,
-    reassignTeacher
+    reassignTeacher,
+    migrateMissingStudentIds
   } = useData();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTeacherFilter, setSelectedTeacherFilter] = useState('all');
   const [showArchived, setShowArchived] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleRunMigration = async () => {
+    try {
+      const count = await migrateMissingStudentIds();
+      setToastMessage(`Successfully assigned unique 5-digit IDs to ${count} students!`);
+      setTimeout(() => setToastMessage(null), 4000);
+    } catch (e) {
+      console.error(e);
+      setToastMessage('Migration failed.');
+      setTimeout(() => setToastMessage(null), 3000);
+    }
+  };
 
   // Modals
   const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
@@ -133,6 +147,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         <div className="flex flex-wrap items-center gap-2.5 relative z-10">
           <button
+            onClick={handleRunMigration}
+            className="px-3.5 py-2.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+            title="Assign 5-digit unique IDs to any students missing them"
+          >
+            <span>Assign 5-Digit IDs</span>
+          </button>
+
+          <button
             onClick={() => setIsTeacherModalOpen(true)}
             className="px-4 py-2.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
           >
@@ -171,7 +193,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="mt-3 flex items-baseline justify-between">
             <div>
               <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                <AnimatedCounter value={totalActiveStudents} durationMs={900} />
+                <AnimatedCounter value={totalActiveStudents} durationMs={3000} />
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Enrolled across all groups</p>
             </div>
@@ -193,10 +215,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              <AnimatedCounter value={activeGroups.length} durationMs={900} />
+              <AnimatedCounter value={activeGroups.length} durationMs={3000} />
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-              <AnimatedCounter value={teachers.length} durationMs={800} /> Active Instructors
+              <AnimatedCounter value={teachers.length} durationMs={3000} /> Active Instructors
             </p>
           </div>
         </div>
@@ -211,7 +233,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              <AnimatedCounter value={totalLessonsConductedThisMonth} durationMs={1000} />
+              <AnimatedCounter value={totalLessonsConductedThisMonth} durationMs={3000} />
             </div>
             <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">
               Conducted this month
@@ -229,7 +251,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              <AnimatedCounter value={globalAttendanceRate} suffix="%" durationMs={1100} />
+              <AnimatedCounter value={globalAttendanceRate} suffix="%" durationMs={3000} />
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Average presence rate</p>
           </div>

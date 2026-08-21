@@ -13,6 +13,7 @@ import { StudentModal } from '../students/StudentModal';
 import { AddExistingStudentModal } from '../students/AddExistingStudentModal';
 import { RemoveStudentFromGroupModal } from '../students/RemoveStudentFromGroupModal';
 import { NotifyParentsModal } from '../attendance/NotifyParentsModal';
+import { StudentProfileDrawer } from '../students/StudentProfileDrawer';
 import { GroupModal } from './GroupModal';
 import { MonthlyAttendanceSheet } from './MonthlyAttendanceSheet';
 import { GroupArchiveTab } from './GroupArchiveTab';
@@ -87,6 +88,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
   const [isRemovingStudent, setIsRemovingStudent] = useState(false);
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
   const [isEditGroupOpen, setIsEditGroupOpen] = useState(false);
+  const [profileDrawerStudent, setProfileDrawerStudent] = useState<Student | null>(null);
 
   // Search in roster
   const [searchQuery, setSearchQuery] = useState('');
@@ -300,70 +302,88 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 dark:border-slate-800 mt-6 pt-4">
-          <button
-            onClick={() => setActiveTab('register')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
-              activeTab === 'register'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            <CalendarCheck2 className="w-3.5 h-3.5" />
-            <span>Attendance</span>
-          </button>
+        <div className="border-t border-slate-100 dark:border-slate-800 mt-6 pt-4">
+          {/* Mobile Select Dropdown */}
+          <div className="block sm:hidden">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value as any)}
+              className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-xs font-bold text-slate-800 dark:text-white outline-none shadow-xs"
+            >
+              <option value="register">Attendance Register</option>
+              <option value="monthly">Monthly Sheet</option>
+              <option value="roster">Students Roster ({groupStudents.length})</option>
+              <option value="history">Session Logs ({groupRecords.length})</option>
+              <option value="archive">Group Archive ({groupActivityLogs.filter((l) => l.groupId === group.id).length})</option>
+            </select>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('monthly')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
-              activeTab === 'monthly'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            <CalendarDays className="w-3.5 h-3.5" />
-            <span>Monthly Sheet</span>
-          </button>
+          {/* Desktop Tab Row */}
+          <div className="hidden sm:flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('register')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                activeTab === 'register'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              <CalendarCheck2 className="w-3.5 h-3.5" />
+              <span>Attendance</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('roster')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
-              activeTab === 'roster'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span>Students Roster ({groupStudents.length})</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('monthly')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                activeTab === 'monthly'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              <CalendarDays className="w-3.5 h-3.5" />
+              <span>Monthly Sheet</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
-              activeTab === 'history'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            <History className="w-3.5 h-3.5" />
-            <span>Session Logs ({groupRecords.length})</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('roster')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                activeTab === 'roster'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Students Roster ({groupStudents.length})</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('archive')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
-              activeTab === 'archive'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            <Archive className="w-3.5 h-3.5" />
-            <span>
-              Group Archive (
-              {groupActivityLogs.filter((l) => l.groupId === group.id).length}
-              )
-            </span>
-          </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                activeTab === 'history'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              <History className="w-3.5 h-3.5" />
+              <span>Session Logs ({groupRecords.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('archive')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                activeTab === 'archive'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              <Archive className="w-3.5 h-3.5" />
+              <span>
+                Group Archive (
+                {groupActivityLogs.filter((l) => l.groupId === group.id).length}
+                )
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -708,30 +728,41 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                     </div>
 
                     {/* Actions */}
-                    <div className="pt-3.5 mt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+                    <div className="pt-3.5 mt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                       <button
-                        onClick={() => {
-                          setStudentToEdit(student);
-                          setIsStudentModalOpen(true);
-                        }}
-                        className="px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                        onClick={() => setProfileDrawerStudent(student)}
+                        className="px-2.5 py-1.5 rounded-md border border-indigo-200 dark:border-indigo-800/80 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                        title="Check Student Profile & History"
                       >
-                        <Edit2 className="w-3 h-3" />
-                        <span>Edit</span>
+                        <Users className="w-3 h-3" />
+                        <span>Profile</span>
                       </button>
-                      <button
-                        onClick={() =>
-                          handleOpenRemoveModal(
-                            student.id,
-                            `${student.firstName} ${student.surname}`
-                          )
-                        }
-                        className="px-2.5 py-1.5 rounded-md border border-amber-200 dark:border-amber-850/80 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
-                        title="Remove student from this group"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                        <span>Remove</span>
-                      </button>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setStudentToEdit(student);
+                            setIsStudentModalOpen(true);
+                          }}
+                          className="px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleOpenRemoveModal(
+                              student.id,
+                              `${student.firstName} ${student.surname}`
+                            )
+                          }
+                          className="px-2.5 py-1.5 rounded-md border border-amber-200 dark:border-amber-850/80 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                          title="Remove student from this group"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          <span>Remove</span>
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -879,6 +910,13 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
         isOpen={isAddExistingModalOpen}
         onClose={() => setIsAddExistingModalOpen(false)}
         groupId={group.id}
+      />
+
+      {/* Student Profile Drawer */}
+      <StudentProfileDrawer
+        isOpen={Boolean(profileDrawerStudent)}
+        onClose={() => setProfileDrawerStudent(null)}
+        student={profileDrawerStudent}
       />
     </div>
   );
