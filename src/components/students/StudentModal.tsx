@@ -25,6 +25,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
   const [firstName, setFirstName] = useState('');
   const [surname, setSurname] = useState('');
   const [parentPhone, setParentPhone] = useState('+998 ');
+  const [telegramChatId, setTelegramChatId] = useState('');
   const [birthDate, setBirthDate] = useState('2009-05-15');
   const [notes, setNotes] = useState('');
   const [selectedGroupId, setSelectedGroupId] = useState(groupId);
@@ -46,6 +47,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
       setFirstName(studentToEdit.firstName || '');
       setSurname(studentToEdit.surname || '');
       setParentPhone(studentToEdit.parentPhone || '+998 ');
+      setTelegramChatId(studentToEdit.telegramChatId || studentToEdit.parentTelegramId || '');
       setBirthDate(studentToEdit.birthDate || '2009-05-15');
       setNotes(studentToEdit.notes || '');
       setSelectedGroupId(studentToEdit.groupId || groupId || availableGroups[0]?.id || '');
@@ -53,6 +55,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
       setFirstName('');
       setSurname('');
       setParentPhone('+998 ');
+      setTelegramChatId('');
       setBirthDate('2009-05-15');
       setNotes('');
       setSelectedGroupId(groupId || availableGroups[0]?.id || '');
@@ -86,7 +89,8 @@ export const StudentModal: React.FC<StudentModalProps> = ({
           parentPhone: cleanPhone,
           birthDate,
           notes: notes.trim(),
-          groupId: selectedGroupId
+          groupId: selectedGroupId,
+          telegramChatId: telegramChatId.trim()
         });
       } else {
         await addStudent({
@@ -97,7 +101,8 @@ export const StudentModal: React.FC<StudentModalProps> = ({
           notes: notes.trim(),
           groupId: selectedGroupId,
           enrolledDate: new Date().toISOString().substring(0, 10),
-          status: 'active'
+          status: 'active',
+          telegramChatId: telegramChatId.trim()
         });
       }
       setShowReassignConfirm(false);
@@ -246,6 +251,25 @@ export const StudentModal: React.FC<StudentModalProps> = ({
               />
             </div>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Default country code set to Uzbekistan (+998)</p>
+          </div>
+
+          {/* Parent Telegram Chat ID */}
+          <div>
+            <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+              Parent Telegram Chat ID
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={telegramChatId}
+                onChange={(e) => setTelegramChatId(e.target.value)}
+                placeholder="e.g. 123456789"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-mono"
+              />
+            </div>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+              Telegram Bot Link: <a href="https://t.me/OpenWorldNotifierBot" target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 underline font-semibold">@OpenWorldNotifierBot</a>
+            </p>
           </div>
 
           {/* Birth date */}

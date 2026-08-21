@@ -76,6 +76,8 @@ export interface Student {
   status?: StudentStatus;
   previousGroupId?: string;
   transferDate?: string;
+  telegramChatId?: string;
+  parentTelegramId?: string;
 }
 
 export interface AttendanceStats {

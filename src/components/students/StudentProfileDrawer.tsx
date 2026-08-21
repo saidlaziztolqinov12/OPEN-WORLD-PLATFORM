@@ -158,6 +158,15 @@ export const StudentProfileDrawer: React.FC<StudentProfileDrawerProps> = ({
               </div>
             </div>
 
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+              <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                Parent Telegram Chat ID
+              </div>
+              <div className="text-xs font-bold font-mono text-slate-800 dark:text-slate-200">
+                {student.telegramChatId || student.parentTelegramId || 'Not configured'}
+              </div>
+            </div>
+
             {/* Notes if any */}
             {student.notes && (
               <div className="p-4 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200/60 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200">

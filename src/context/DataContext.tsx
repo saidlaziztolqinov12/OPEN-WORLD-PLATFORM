@@ -30,6 +30,7 @@ import {
 } from '../lib/seedData';
 import { useAuth } from './AuthContext';
 import { generateUniqueStudentId } from '../utils/studentId';
+import { sendTelegramMessage } from '../services/telegram';
 
 interface DataContextType {
   users: User[];
@@ -568,6 +569,27 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setDoc(doc(db, 'attendance', recordId), sanitizedPayload);
       await setDoc(doc(db, 'attendance_records', recordId), sanitizedPayload);
       await setDoc(doc(db, 'sessions', recordId), sanitizedPayload);
+
+      // Trigger Telegram notifications for students with telegramChatId / parentTelegramId
+      const dateStr = sanitizedPayload.date;
+      const statusMap = sanitizedPayload.statusMap || {};
+      const commentsMap = sanitizedPayload.commentsMap || {};
+
+      for (const [studentId, status] of Object.entries(statusMap)) {
+        const student = students.find((s) => s.id === studentId);
+        if (student && (student.telegramChatId || student.parentTelegramId)) {
+          const chatId = student.telegramChatId || student.parentTelegramId;
+          const statusEmoji = status === 'present' ? '✅' : '❌';
+          const statusText = status === 'present' ? 'Present' : 'Absent';
+          const comment = commentsMap[studentId] || '';
+          const studentName = `${student.firstName} ${student.surname}`;
+          const text = `🔔 <b>Open World Academy — Attendance Update</b>\n\n<b>Student:</b> ${studentName}\n<b>Date:</b> ${dateStr}\n<b>Status:</b> ${statusEmoji} ${statusText}\n${comment ? `<b>Note:</b> ${comment}` : ''}`;
+          
+          sendTelegramMessage(chatId, text).catch((err) => {
+            console.error('Failed to send Telegram message:', err);
+          });
+        }
+      }
     } catch (error) {
       console.error('Error saving attendance:', error);
     }
