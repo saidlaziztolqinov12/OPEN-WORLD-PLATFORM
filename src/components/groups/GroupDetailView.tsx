@@ -664,7 +664,11 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
           {/* Roster Cards Grid with Staggered Animation */}
           {filteredStudents.length === 0 ? (
             <div className="bg-white dark:bg-slate-900 rounded-lg border-none p-12 text-center shadow-xs">
-              <p className="text-slate-500 dark:text-slate-400 text-sm">No students match your query.</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">
+                {searchQuery
+                  ? `No students found matching "${searchQuery}".`
+                  : "No students found. Click 'Add Student' to enroll your first student."}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

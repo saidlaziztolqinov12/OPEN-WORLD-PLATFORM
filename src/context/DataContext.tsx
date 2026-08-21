@@ -77,10 +77,10 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>(INITIAL_USERS);
-  const [groups, setGroups] = useState<Group[]>(INITIAL_GROUPS);
-  const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(INITIAL_ATTENDANCE);
-  const [notifications, setNotifications] = useState<InternalNotification[]>(INITIAL_NOTIFICATIONS);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [notifications, setNotifications] = useState<InternalNotification[]>([]);
   const [groupActivityLogs, setGroupActivityLogs] = useState<GroupActivityLog[]>(INITIAL_GROUP_ACTIVITY_LOGS);
   const [loading, setLoading] = useState<boolean>(true);
   const [isOnline, setIsOnline] = useState<boolean>(true);
@@ -91,6 +91,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let unsubscribeGroups = () => {};
     let unsubscribeStudents = () => {};
     let unsubscribeAttendance = () => {};
+    let unsubscribeAttendance2 = () => {};
+    let unsubscribeSessions = () => {};
     let unsubscribeNotifications = () => {};
     let unsubscribeLogs = () => {};
 
@@ -141,11 +143,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         unsubscribeGroups = onSnapshot(
           query(collection(db, 'groups')),
           (snapshot) => {
-            if (!snapshot.empty) {
-              const items: Group[] = [];
-              snapshot.forEach((d) => items.push({ id: d.id, ...(d.data() as Omit<Group, 'id'>) }));
-              setGroups(items);
-            }
+            const items: Group[] = [];
+            snapshot.forEach((d) => items.push({ id: d.id, ...(d.data() as Omit<Group, 'id'>) }));
+            setGroups(items);
           },
           (err) => {
             console.warn('Groups listener notice:', err);
@@ -156,49 +156,42 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         unsubscribeStudents = onSnapshot(
           query(collection(db, 'students')),
           (snapshot) => {
-            if (!snapshot.empty) {
-              const items: Student[] = [];
-              snapshot.forEach((d) => items.push({ id: d.id, ...(d.data() as Omit<Student, 'id'>) }));
-              setStudents(items);
-            }
+            const items: Student[] = [];
+            snapshot.forEach((d) => items.push({ id: d.id, ...(d.data() as Omit<Student, 'id'>) }));
+            setStudents(items);
           },
           (err) => {
             console.warn('Students listener notice:', err);
           }
         );
 
-        // 4. Live Sync: attendance_records collection
-        unsubscribeAttendance = onSnapshot(
-          query(collection(db, 'attendance_records')),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items: AttendanceRecord[] = [];
-              snapshot.forEach((d) => items.push({ id: d.id, ...(d.data() as Omit<AttendanceRecord, 'id'>) }));
-              setAttendanceRecords(items);
-            }
-          },
-          (err) => {
-            console.warn('Attendance listener notice:', err);
-          }
-        );
+        // 4. Live Sync: attendance collections (attendance_records, attendance, sessions)
+        const handleAttendanceSnapshot = (snapshot: any) => {
+          const itemsMap = new Map<string, AttendanceRecord>();
+          snapshot.forEach((d: any) => {
+            itemsMap.set(d.id, { id: d.id, ...(d.data() as Omit<AttendanceRecord, 'id'>) });
+          });
+          setAttendanceRecords(Array.from(itemsMap.values()));
+        };
+        unsubscribeAttendance = onSnapshot(query(collection(db, 'attendance_records')), handleAttendanceSnapshot);
+        unsubscribeAttendance2 = onSnapshot(query(collection(db, 'attendance')), handleAttendanceSnapshot);
+        unsubscribeSessions = onSnapshot(query(collection(db, 'sessions')), handleAttendanceSnapshot);
 
         // 5. Live Sync: notifications collection (real-time Inbox)
         unsubscribeNotifications = onSnapshot(
           query(collection(db, 'notifications')),
           (snapshot) => {
-            if (!snapshot.empty) {
-              const items: InternalNotification[] = [];
-              snapshot.forEach((d) => {
-                const notif = { id: d.id, ...(d.data() as Omit<InternalNotification, 'id'>) };
-                if (notif.senderName && notif.senderName.includes('Sarah')) {
-                  notif.senderName = notif.senderName.replace(/Sarah\s*Jenkins/gi, 'MuhammadIso Ermatov');
-                }
-                items.push(notif);
-              });
-              // Sort newest first
-              items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-              setNotifications(items);
-            }
+            const items: InternalNotification[] = [];
+            snapshot.forEach((d) => {
+              const notif = { id: d.id, ...(d.data() as Omit<InternalNotification, 'id'>) };
+              if (notif.senderName && notif.senderName.includes('Sarah')) {
+                notif.senderName = notif.senderName.replace(/Sarah\s*Jenkins/gi, 'MuhammadIso Ermatov');
+              }
+              items.push(notif);
+            });
+            // Sort newest first
+            items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            setNotifications(items);
             setLoading(false);
           },
           (err) => {
@@ -241,6 +234,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       unsubscribeGroups();
       unsubscribeStudents();
       unsubscribeAttendance();
+      unsubscribeAttendance2();
+      unsubscribeSessions();
       unsubscribeNotifications();
       unsubscribeLogs();
     };
@@ -563,6 +558,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       await setDoc(doc(db, 'attendance_records', recordId), updatedRecord);
+      await setDoc(doc(db, 'attendance', recordId), updatedRecord);
+      await setDoc(doc(db, 'sessions', recordId), updatedRecord);
     } catch (e) {
       console.warn('Firestore write notice for saveAttendanceRecord:', e);
     }
@@ -655,7 +652,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (userId && !readBy.includes(userId)) {
         readBy.push(userId);
       }
-      await updateDoc(doc(db, 'notifications', id), { read: true, readBy });
+      await setDoc(doc(db, 'notifications', id), { read: true, readBy }, { merge: true });
     } catch (e) {
       console.warn('Firestore update notice for markNotificationAsRead:', e);
     }
@@ -678,7 +675,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (userId && !readBy.includes(userId)) {
           readBy.push(userId);
         }
-        await updateDoc(doc(db, 'notifications', n.id), { read: true, readBy });
+        await setDoc(doc(db, 'notifications', n.id), { read: true, readBy }, { merge: true });
       });
     } catch (e) {
       console.warn('Firestore update notice for markAllNotificationsAsRead:', e);
@@ -723,7 +720,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
 
       try {
-        await updateDoc(doc(db, 'students', studentId), updatePayload);
+        await setDoc(doc(db, 'students', studentId), updatePayload, { merge: true });
       } catch (e) {
         console.warn('Firestore update notice for student transfer:', e);
       }
@@ -758,10 +755,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     try {
-      await updateDoc(doc(db, 'notifications', notificationId), {
+      await setDoc(doc(db, 'notifications', notificationId), {
         status: 'APPROVED',
         read: true
-      });
+      }, { merge: true });
     } catch (e) {
       console.warn('Firestore update notice for notification approval:', e);
     }
@@ -798,10 +795,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     try {
-      await updateDoc(doc(db, 'notifications', notificationId), {
+      await setDoc(doc(db, 'notifications', notificationId), {
         status: 'REJECTED',
         read: true
-      });
+      }, { merge: true });
     } catch (e) {
       console.warn('Firestore update notice for notification rejection:', e);
     }

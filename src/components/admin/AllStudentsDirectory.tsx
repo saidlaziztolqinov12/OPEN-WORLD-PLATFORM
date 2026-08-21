@@ -187,7 +187,7 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
           <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm">
             {searchQuery
               ? `No students found matching "${searchQuery}".`
-              : 'No students enrolled in the center yet.'}
+              : "No students found. Click 'Add Student' to enroll your first student."}
           </div>
         ) : (
           <div className="overflow-x-auto">

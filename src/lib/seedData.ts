@@ -681,29 +681,29 @@ export async function seedInitialFirestoreData(db: Firestore, force = false): Pr
       batch.set(userRef, user);
     });
 
-    // 2. Groups
-    INITIAL_GROUPS.forEach((group) => {
-      const groupRef = doc(db, 'groups', group.id);
-      batch.set(groupRef, group);
-    });
+    // 2. Groups (starts empty as requested)
+    // INITIAL_GROUPS.forEach((group) => {
+    //   const groupRef = doc(db, 'groups', group.id);
+    //   batch.set(groupRef, group);
+    // });
 
-    // 3. Students
-    INITIAL_STUDENTS.forEach((student) => {
-      const studentRef = doc(db, 'students', student.id);
-      batch.set(studentRef, student);
-    });
+    // 3. Students (starts empty as requested)
+    // INITIAL_STUDENTS.forEach((student) => {
+    //   const studentRef = doc(db, 'students', student.id);
+    //   batch.set(studentRef, student);
+    // });
 
-    // 4. Attendance (attendance_records)
-    INITIAL_ATTENDANCE.forEach((record) => {
-      const attRef = doc(db, 'attendance_records', record.id);
-      batch.set(attRef, record);
-    });
+    // 4. Attendance (starts empty as requested)
+    // INITIAL_ATTENDANCE.forEach((record) => {
+    //   const attRef = doc(db, 'attendance_records', record.id);
+    //   batch.set(attRef, record);
+    // });
 
-    // 5. Notifications
-    INITIAL_NOTIFICATIONS.forEach((notif) => {
-      const notifRef = doc(db, 'notifications', notif.id);
-      batch.set(notifRef, notif);
-    });
+    // 5. Notifications (starts empty as requested)
+    // INITIAL_NOTIFICATIONS.forEach((notif) => {
+    //   const notifRef = doc(db, 'notifications', notif.id);
+    //   batch.set(notifRef, notif);
+    // });
 
     // 6. Group Activity Logs (group_logs)
     INITIAL_GROUP_ACTIVITY_LOGS.forEach((log) => {
