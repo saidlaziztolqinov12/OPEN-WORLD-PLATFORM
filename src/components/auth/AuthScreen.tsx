@@ -34,9 +34,9 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-slate-800">
+    <div className="min-h-[100dvh] bg-slate-100 flex flex-col justify-start pt-20 sm:pt-0 sm:justify-center pb-10 px-4 sm:px-6 lg:px-8 text-slate-800">
       {/* Brand Header */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+      <div className="mx-4 sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
           <GraduationCap className="w-9 h-9" />
         </div>
@@ -49,7 +49,7 @@ export const AuthScreen: React.FC = () => {
       </div>
 
       {/* Main Login Card */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-8 mx-4 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-6 sm:px-10 shadow-xl shadow-slate-300/40 rounded-3xl border border-slate-200">
           <div className="mb-6 text-center">
             <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
