@@ -37,7 +37,7 @@ export const TeacherProfileView: React.FC<TeacherProfileViewProps> = ({
   onSelectGroup,
   isReadOnly = false
 }) => {
-  const { teachers, groups, students, attendanceRecords } = useData();
+  const { teachers, groups, students, attendanceRecords, getMonthlyAttendanceRoster } = useData();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const teacher = teachers.find((t) => t.id === teacherId);
@@ -188,6 +188,7 @@ export const TeacherProfileView: React.FC<TeacherProfileViewProps> = ({
                 students={students}
                 attendanceRecords={attendanceRecords}
                 onSelectGroup={onSelectGroup}
+                getMonthlyAttendanceRoster={getMonthlyAttendanceRoster}
               />
             ))}
           </div>
@@ -212,6 +213,7 @@ interface CohortAnalyticsCardProps {
   students: Student[];
   attendanceRecords: AttendanceRecord[];
   onSelectGroup: (groupId: string) => void;
+  getMonthlyAttendanceRoster?: (groupId: string, yearMonth: string) => any[];
 }
 
 const CohortAnalyticsCard: React.FC<CohortAnalyticsCardProps> = ({
@@ -219,19 +221,35 @@ const CohortAnalyticsCard: React.FC<CohortAnalyticsCardProps> = ({
   yearMonth,
   students,
   attendanceRecords,
-  onSelectGroup
+  onSelectGroup,
+  getMonthlyAttendanceRoster
 }) => {
-  // Roster students for this cohort
+  // Roster students currently available in this cohort
   const rosterStudents = useMemo(() => {
     return students.filter((s) => s.groupId === group.id && s.status !== 'inactive');
   }, [students, group.id]);
 
-  // Compute 13 lessons data for this group in yearMonth
+  // Compute 13 lessons data for this group in yearMonth, deduplicated by unique date
   const chartData = useMemo(() => {
     const groupRecords = attendanceRecords
       .filter((r) => r.groupId === group.id && r.date.startsWith(yearMonth))
       .sort((a, b) => a.date.localeCompare(b.date));
 
+    // Deduplicate by date (unique lesson dates in month)
+    const dateMap = new Map<string, AttendanceRecord>();
+    groupRecords.forEach((r) => {
+      if (!dateMap.has(r.date)) {
+        dateMap.set(r.date, r);
+      } else {
+        const existing = dateMap.get(r.date)!;
+        dateMap.set(r.date, {
+          ...existing,
+          statusMap: { ...existing.statusMap, ...r.statusMap }
+        });
+      }
+    });
+
+    const uniqueRecords = Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date));
     const totalStudents = Math.max(1, rosterStudents.length);
     const data: Array<{
       lesson: string;
@@ -243,7 +261,7 @@ const CohortAnalyticsCard: React.FC<CohortAnalyticsCardProps> = ({
     }> = [];
 
     for (let i = 0; i < 13; i++) {
-      const rec = groupRecords[i];
+      const rec = uniqueRecords[i];
       const lessonName = `L${i + 1}`;
       if (rec && rec.statusMap) {
         let present = 0;
@@ -275,12 +293,39 @@ const CohortAnalyticsCard: React.FC<CohortAnalyticsCardProps> = ({
   }, [attendanceRecords, group.id, yearMonth, rosterStudents]);
 
   const lessonsCompletedCount = chartData.filter((d) => d.hasRecord).length;
-  const avgAttendance = useMemo(() => {
-    const recorded = chartData.filter((d) => d.hasRecord);
-    if (recorded.length === 0) return 0;
-    const sum = recorded.reduce((acc, cur) => acc + cur.percentage, 0);
-    return Math.round(sum / recorded.length);
-  }, [chartData]);
+
+  // Total attended lessons strictly from monthly sheet logic (including historical left students)
+  const totalAttendedLessons = useMemo(() => {
+    const groupRecords = attendanceRecords.filter(
+      (r) => r.groupId === group.id && r.date.startsWith(yearMonth)
+    );
+    const uniqueDates = Array.from(new Set(groupRecords.map((r) => r.date)));
+    const monthlyRoster = getMonthlyAttendanceRoster
+      ? getMonthlyAttendanceRoster(group.id, yearMonth)
+      : rosterStudents;
+
+    let attendedSum = 0;
+    uniqueDates.forEach((dateStr) => {
+      const recordsOnDate = groupRecords.filter((r) => r.date === dateStr);
+      const combinedStatusMap: Record<string, string> = {};
+      recordsOnDate.forEach((rec) => {
+        if (rec.statusMap) {
+          Object.assign(combinedStatusMap, rec.statusMap);
+        }
+      });
+
+      monthlyRoster.forEach((s: any) => {
+        if (s.isHistoricalLeft && s.lastAttendanceDateInGroupInMonth && dateStr > s.lastAttendanceDateInGroupInMonth) {
+          return;
+        }
+        if (combinedStatusMap[s.id] === 'present') {
+          attendedSum++;
+        }
+      });
+    });
+
+    return attendedSum;
+  }, [attendanceRecords, group.id, yearMonth, getMonthlyAttendanceRoster, rosterStudents]);
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-lg p-6 shadow-xs border border-slate-200/60 dark:border-slate-800/80 space-y-6 transition-colors flex flex-col justify-between">
@@ -372,8 +417,8 @@ const CohortAnalyticsCard: React.FC<CohortAnalyticsCardProps> = ({
         </div>
 
         <div className="p-2.5 bg-emerald-50/70 dark:bg-emerald-950/40 rounded-md border border-emerald-200/50 dark:border-emerald-800/50">
-          <div className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-semibold">Monthly Avg</div>
-          <div className="text-sm font-extrabold text-emerald-800 dark:text-emerald-300 mt-0.5">{avgAttendance}%</div>
+          <div className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-semibold">Attended Lessons</div>
+          <div className="text-sm font-extrabold text-emerald-800 dark:text-emerald-300 mt-0.5">{totalAttendedLessons}</div>
         </div>
       </div>
     </div>

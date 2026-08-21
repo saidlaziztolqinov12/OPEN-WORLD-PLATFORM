@@ -20,18 +20,27 @@ import {
 interface AddExistingStudentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  currentGroup: Group;
+  currentGroup?: Group;
+  groupId?: string;
   onSuccess?: () => void;
 }
 
 export const AddExistingStudentModal: React.FC<AddExistingStudentModalProps> = ({
   isOpen,
   onClose,
-  currentGroup,
+  currentGroup: propCurrentGroup,
+  groupId,
   onSuccess
 }) => {
   const { students, groups, notifications, transferStudent, sendNotification } = useData();
   const { currentUser, isAdmin } = useAuth();
+
+  const currentGroup = propCurrentGroup || groups.find((g) => g.id === groupId) || {
+    id: groupId || '',
+    name: 'Selected Cohort',
+    schedule: '',
+    teacherName: 'Assigned Instructor'
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const [studentToEnrollConfirm, setStudentToEnrollConfirm] = useState<Student | null>(null);

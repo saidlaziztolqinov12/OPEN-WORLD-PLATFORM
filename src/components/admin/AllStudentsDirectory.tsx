@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 import { Student } from '../../types';
 import { StudentModal } from '../students/StudentModal';
 import { TransferStudentModal } from '../students/TransferStudentModal';
@@ -23,7 +24,8 @@ interface AllStudentsDirectoryProps {
 }
 
 export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSelectGroup: _onSelectGroup }) => {
-  const { students, groups } = useData();
+  const { students, groups, transferStudent } = useData();
+  const { isAdmin } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGroupFilter, setSelectedGroupFilter] = useState('all');
@@ -36,7 +38,11 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
   const [profileDrawerStudent, setProfileDrawerStudent] = useState<Student | null>(null);
   const [activeMenuStudentId, setActiveMenuStudentId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null);
-  const [feedbackToast] = useState<string | null>(null);
+  const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
+
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [studentToAssign, setStudentToAssign] = useState<Student | null>(null);
+  const [assignGroupId, setAssignGroupId] = useState('');
 
   const unassignedCount = useMemo(() => {
     return students.filter((s) => !s.groupId).length;
@@ -305,8 +311,93 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
             >
               <span>Edit Student</span>
             </button>
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  const targetStudent = students.find((s) => s.id === activeMenuStudentId);
+                  setActiveMenuStudentId(null);
+                  setMenuPosition(null);
+                  if (targetStudent) {
+                    setStudentToAssign(targetStudent);
+                    setAssignGroupId(targetStudent.groupId || groups[0]?.id || '');
+                    setIsAssignModalOpen(true);
+                  }
+                }}
+                className="w-full px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 flex items-center gap-2 transition-colors cursor-pointer border-t border-slate-100 dark:border-slate-800"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Assign Group</span>
+              </button>
+            )}
           </div>
         </>
+      )}
+
+      {/* Assign Group Modal */}
+      {isAssignModalOpen && studentToAssign && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150 transition-colors">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                  Assign Student to Cohort
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  {studentToAssign.firstName} {studentToAssign.surname}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsAssignModalOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                  Select Cohort / Group
+                </label>
+                <select
+                  value={assignGroupId}
+                  onChange={(e) => setAssignGroupId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-800 outline-none"
+                >
+                  <option value="">-- Select Group --</option>
+                  {groups.filter((g) => !g.archived).map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name} ({g.schedule}) — {g.teacherName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="p-6 bg-slate-50 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsAssignModalOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!assignGroupId}
+                onClick={async () => {
+                  if (!assignGroupId || !studentToAssign) return;
+                  await transferStudent(studentToAssign.id, assignGroupId);
+                  setFeedbackToast(`Successfully assigned ${studentToAssign.firstName} ${studentToAssign.surname} to group!`);
+                  setTimeout(() => setFeedbackToast(null), 4000);
+                  setIsAssignModalOpen(false);
+                  setStudentToAssign(null);
+                }}
+                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all cursor-pointer disabled:opacity-50"
+              >
+                Confirm Assignment
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Student Enrollment / Edit Modal */}

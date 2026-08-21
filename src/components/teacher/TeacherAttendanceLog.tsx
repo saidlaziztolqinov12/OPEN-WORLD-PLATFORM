@@ -23,7 +23,7 @@ export const TeacherAttendanceLog: React.FC<TeacherAttendanceLogProps> = ({ onSe
     .filter((r) => {
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase();
-      const groupName = groups.find((g) => g.id === r.groupId)?.name.toLowerCase() || '';
+      const groupName = groups.find((g) => g.id === r.groupId)?.name?.toLowerCase() || '';
       const topic = (r.topicCovered || '').toLowerCase();
       return groupName.includes(q) || topic.includes(q) || r.date.includes(q);
     })

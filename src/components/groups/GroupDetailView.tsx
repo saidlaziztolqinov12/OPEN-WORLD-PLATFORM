@@ -929,6 +929,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
         isOpen={isAddExistingModalOpen}
         onClose={() => setIsAddExistingModalOpen(false)}
         groupId={group.id}
+        currentGroup={group}
       />
 
       {/* Student Profile Drawer */}
