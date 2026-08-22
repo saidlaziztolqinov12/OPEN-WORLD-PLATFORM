@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { StudentModal } from '../students/StudentModal';
 import { AddExistingStudentModal } from '../students/AddExistingStudentModal';
 import { RemoveStudentFromGroupModal } from '../students/RemoveStudentFromGroupModal';
+import { OfferStudentModal } from '../students/OfferStudentModal';
 import { NotifyParentsModal } from '../attendance/NotifyParentsModal';
 import { StudentProfileDrawer } from '../students/StudentProfileDrawer';
 import { GroupModal } from './GroupModal';
@@ -84,6 +85,8 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [studentToEdit, setStudentToEdit] = useState<Student | null>(null);
   const [isAddExistingModalOpen, setIsAddExistingModalOpen] = useState(false);
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
+  const [studentToOffer, setStudentToOffer] = useState<Student | null>(null);
   const [studentToRemove, setStudentToRemove] = useState<{ id: string; name: string } | null>(null);
   const [isRemovingStudent, setIsRemovingStudent] = useState(false);
   const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
@@ -160,8 +163,9 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
     );
   }
 
-  // Current register summary stats: Absent (Red), Unlabeled (White), Present (Green)
+  // Current register summary stats: Absent (Red), Late (Amber), Unlabeled (White), Present (Green)
   const absentCount = groupStudents.filter((s) => statusMap[s.id] === 'absent').length;
+  const lateCount = groupStudents.filter((s) => statusMap[s.id] === 'late').length;
   const unmarkedCount = groupStudents.filter((s) => !statusMap[s.id]).length;
   const presentCount = groupStudents.filter((s) => statusMap[s.id] === 'present').length;
   const totalRoster = groupStudents.length;
@@ -425,7 +429,7 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
               </div>
             </div>
 
-            {/* Three next-to-next status tally boxes: Red (Absent), White (Unlabeled), Green (Present) */}
+            {/* Status tally boxes: Absent (Red), Late (Amber), Unlabeled (White), Present (Green) */}
             <div className="flex items-center gap-1.5" id="attendance-summary-counters">
               {/* Red Box: Absent Count */}
               <div
@@ -433,6 +437,14 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                 title="Absent"
               >
                 <AnimatedCounter value={absentCount} />
+              </div>
+
+              {/* Amber Box: Late Count */}
+              <div
+                className="min-w-[38px] h-8 px-2.5 rounded-md bg-amber-500 text-white font-extrabold text-xs flex items-center justify-center shadow-xs select-none"
+                title="Late (Kechikdi)"
+              >
+                <AnimatedCounter value={lateCount} />
               </div>
 
               {/* White Box: Unlabeled / Unmarked Count */}
@@ -526,6 +538,20 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Present</span>
+                          </button>
+
+                          {/* Late Button */}
+                          <button
+                            type="button"
+                            onClick={() => handleStatusChange(student.id, 'late')}
+                            className={`py-1.5 px-3 rounded-md text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+                              currentStatus === 'late'
+                                ? 'bg-amber-500 text-white shadow-xs ring-2 ring-amber-500 ring-offset-1 dark:ring-offset-slate-900'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-700 dark:hover:text-amber-300'
+                            }`}
+                          >
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>Late (K)</span>
                           </button>
 
                           {/* Absent Button */}
@@ -748,14 +774,27 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
 
                     {/* Actions */}
                     <div className="pt-3.5 mt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                      <button
-                        onClick={() => setProfileDrawerStudent(student)}
-                        className="px-2.5 py-1.5 rounded-md border border-indigo-200 dark:border-indigo-800/80 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
-                        title="Check Student Profile & History"
-                      >
-                        <Users className="w-3 h-3" />
-                        <span>Profile</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setProfileDrawerStudent(student)}
+                          className="px-2.5 py-1.5 rounded-md border border-indigo-200 dark:border-indigo-800/80 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                          title="Check Student Profile & History"
+                        >
+                          <Users className="w-3 h-3" />
+                          <span>Profile</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setStudentToOffer(student);
+                            setIsOfferModalOpen(true);
+                          }}
+                          className="px-2.5 py-1.5 rounded-md border border-indigo-200 dark:border-indigo-800/80 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                          title="Offer student to another group"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>Offer</span>
+                        </button>
+                      </div>
 
                       <div className="flex items-center gap-2">
                         <button
@@ -775,11 +814,11 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
                               `${student.firstName} ${student.surname}`
                             )
                           }
-                          className="px-2.5 py-1.5 rounded-md border border-amber-200 dark:border-amber-850/80 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
-                          title="Remove student from this group"
+                          className="px-2.5 py-1.5 rounded-md border border-rose-300 dark:border-rose-700 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-1 cursor-pointer"
+                          title="Kick student from this group"
                         >
                           <Trash2 className="w-3 h-3" />
-                          <span>Remove</span>
+                          <span>Kick</span>
                         </button>
                       </div>
                     </div>
@@ -929,6 +968,16 @@ export const GroupDetailView: React.FC<GroupDetailViewProps> = ({ groupId, onBac
         isOpen={isAddExistingModalOpen}
         onClose={() => setIsAddExistingModalOpen(false)}
         groupId={group.id}
+        currentGroup={group}
+      />
+
+      <OfferStudentModal
+        isOpen={isOfferModalOpen}
+        onClose={() => {
+          setIsOfferModalOpen(false);
+          setStudentToOffer(null);
+        }}
+        student={studentToOffer}
         currentGroup={group}
       />
 

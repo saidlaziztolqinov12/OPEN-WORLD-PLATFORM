@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { User } from '../../types';
 import { TeacherModal } from './TeacherModal';
+import { TeacherAvatar } from '../common/TeacherAvatar';
 import {
   Users,
   Plus,
@@ -82,11 +83,7 @@ export const TeacherManagement: React.FC<TeacherManagementProps> = ({ onSelectGr
                 {/* Header */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3.5">
-                    <div className="w-11 h-11 rounded-md bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shadow-xs">
-                      {teacher.firstName && teacher.surname
-                        ? `${teacher.firstName.charAt(0)}${teacher.surname.charAt(0)}`
-                        : teacher.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
-                    </div>
+                    <TeacherAvatar teacher={teacher} className="w-11 h-11" />
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{teacher.name}</h3>

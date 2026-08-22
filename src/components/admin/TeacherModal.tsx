@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '../../types';
 import { useData } from '../../context/DataContext';
-import { X, UserCheck, Mail, Phone, Briefcase, Lock, Sparkles, User as UserIcon, Eye, EyeOff } from 'lucide-react';
+import { X, UserCheck, Mail, Briefcase, Lock, Sparkles, User as UserIcon, Eye, EyeOff } from 'lucide-react';
+import { PhoneInput } from '../common/PhoneInput';
 
 interface TeacherModalProps {
   isOpen: boolean;
@@ -227,19 +228,12 @@ export const TeacherModal: React.FC<TeacherModalProps> = ({
               <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
                 Phone Number <span className="text-rose-500">*</span>
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+998 90 234 5678"
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors"
-                />
-              </div>
+              <PhoneInput
+                required
+                value={phone}
+                onChange={setPhone}
+                placeholder="90 234 5678"
+              />
             </div>
           </div>
 

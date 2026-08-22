@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { useData } from '../../context/DataContext';
 import { Group, Student, AttendanceRecord } from '../../types';
 import { TeacherModal } from './TeacherModal';
+import { TeacherAvatar } from '../common/TeacherAvatar';
 import {
   ArrowLeft,
   Mail,
@@ -110,11 +111,7 @@ export const TeacherProfileView: React.FC<TeacherProfileViewProps> = ({
       <div className="bg-white dark:bg-slate-900 rounded-lg p-6 sm:p-8 shadow-xs border border-slate-200/60 dark:border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors">
         <div className="flex items-start sm:items-center gap-5">
           {/* Prominent Initials Avatar Badge */}
-          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-indigo-600/20 shrink-0">
-            {teacher.firstName && teacher.surname
-              ? `${teacher.firstName.charAt(0)}${teacher.surname.charAt(0)}`
-              : teacher.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
-          </div>
+          <TeacherAvatar teacher={teacher} className="w-16 h-16 rounded-2xl text-xl shadow-lg" />
 
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2.5">

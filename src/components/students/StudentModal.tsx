@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Student } from '../../types';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
-import { X, UserPlus, Phone, Calendar, FileText, GraduationCap, ArrowRightLeft } from 'lucide-react';
+import { X, UserPlus, Calendar, FileText, GraduationCap, ArrowRightLeft } from 'lucide-react';
+import { PhoneInput } from '../common/PhoneInput';
 
 interface StudentModalProps {
   isOpen: boolean;
@@ -24,8 +25,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
 
   const [firstName, setFirstName] = useState('');
   const [surname, setSurname] = useState('');
-  const [parentPhone, setParentPhone] = useState('+998 ');
-  const [telegramChatId, setTelegramChatId] = useState('');
+  const [parentPhone, setParentPhone] = useState('+998901234567');
   const [birthDate, setBirthDate] = useState('2009-05-15');
   const [notes, setNotes] = useState('');
   const [selectedGroupId, setSelectedGroupId] = useState(groupId);
@@ -46,16 +46,14 @@ export const StudentModal: React.FC<StudentModalProps> = ({
     if (studentToEdit) {
       setFirstName(studentToEdit.firstName || '');
       setSurname(studentToEdit.surname || '');
-      setParentPhone(studentToEdit.parentPhone || '+998 ');
-      setTelegramChatId(studentToEdit.telegramChatId || studentToEdit.parentTelegramId || '');
+      setParentPhone(studentToEdit.parentPhone || '+998901234567');
       setBirthDate(studentToEdit.birthDate || '2009-05-15');
       setNotes(studentToEdit.notes || '');
       setSelectedGroupId(studentToEdit.groupId || groupId || availableGroups[0]?.id || '');
     } else {
       setFirstName('');
       setSurname('');
-      setParentPhone('+998 ');
-      setTelegramChatId('');
+      setParentPhone('+998901234567');
       setBirthDate('2009-05-15');
       setNotes('');
       setSelectedGroupId(groupId || availableGroups[0]?.id || '');
@@ -89,8 +87,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
           parentPhone: cleanPhone,
           birthDate,
           notes: notes.trim(),
-          groupId: selectedGroupId,
-          telegramChatId: telegramChatId.trim()
+          groupId: selectedGroupId
         });
       } else {
         await addStudent({
@@ -101,8 +98,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
           notes: notes.trim(),
           groupId: selectedGroupId,
           enrolledDate: new Date().toISOString().substring(0, 10),
-          status: 'active',
-          telegramChatId: telegramChatId.trim()
+          status: 'active'
         });
       }
       setShowReassignConfirm(false);
@@ -235,41 +231,15 @@ export const StudentModal: React.FC<StudentModalProps> = ({
           {/* Parent phone */}
           <div>
             <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-              Parent Contact Phone (SMS / Notification)
+              Parent Contact Phone (SMS / Notification) *
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <Phone className="w-4 h-4" />
-              </div>
-              <input
-                type="tel"
-                required
-                value={parentPhone}
-                onChange={(e) => setParentPhone(e.target.value)}
-                placeholder="+998 90 123 4567"
-                className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-mono"
-              />
-            </div>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Default country code set to Uzbekistan (+998)</p>
-          </div>
-
-          {/* Parent Telegram Chat ID */}
-          <div>
-            <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-              Parent Telegram Chat ID
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={telegramChatId}
-                onChange={(e) => setTelegramChatId(e.target.value)}
-                placeholder="e.g. 123456789"
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-mono"
-              />
-            </div>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-              Telegram Bot Link: <a href="https://t.me/OpenWorldNotifierBot" target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 underline font-semibold">@OpenWorldNotifierBot</a>
-            </p>
+            <PhoneInput
+              required
+              value={parentPhone}
+              onChange={setParentPhone}
+              placeholder="90 123 4567"
+            />
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Uzbekistan mobile number format (+998)</p>
           </div>
 
           {/* Birth date */}

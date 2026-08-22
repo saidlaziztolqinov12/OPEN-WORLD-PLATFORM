@@ -207,13 +207,18 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {filteredStudents.map((student, idx) => {
+                  const isAssigned = Boolean(student.groupId && groups.some((g) => g.id === student.groupId && !g.archived));
                   return (
                     <motion.tr
                       key={student.id}
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.15, delay: Math.min(idx * 0.015, 0.25) }}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
+                      className={`transition-colors ${
+                        isAssigned
+                          ? 'bg-emerald-50/30 dark:bg-emerald-950/10 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20'
+                          : 'bg-amber-50/30 dark:bg-amber-950/10 hover:bg-amber-50/50 dark:hover:bg-amber-950/20'
+                      }`}
                     >
                       <td className="px-5 py-3 text-slate-400 dark:text-slate-500 font-mono text-xs w-16">
                         {idx + 1}
@@ -226,12 +231,23 @@ export const AllStudentsDirectory: React.FC<AllStudentsDirectoryProps> = ({ onSe
                             {student.firstName.charAt(0)}
                             {student.surname.charAt(0)}
                           </div>
-                          <div>
+                          <div className="space-y-0.5">
                             <div className="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                               <span>{student.firstName} {student.surname}</span>
                               <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded">
                                 #{student.studentId || student.id.slice(-5)}
                               </span>
+                            </div>
+                            <div>
+                              {isAssigned ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
+                                  Assigned
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-50 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+                                  Unassigned
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>

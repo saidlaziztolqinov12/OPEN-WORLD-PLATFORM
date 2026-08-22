@@ -23,9 +23,10 @@ export interface Group {
   teacherName: string;
   archived?: boolean;
   createdAt?: string;
+  level?: string;
 }
 
-export type AttendanceStatus = 'present' | 'absent';
+export type AttendanceStatus = 'present' | 'absent' | 'late';
 
 export interface AttendanceStatusMap {
   [studentId: string]: AttendanceStatus;
@@ -89,9 +90,11 @@ export interface AttendanceStats {
 
 export type NotificationType =
   | 'TRANSFER_REQUEST'
+  | 'STUDENT_OFFER'
   | 'ANNOUNCEMENT'
   | 'SYSTEM'
   | 'transfer_request'
+  | 'student_offer'
   | 'announcement'
   | 'system';
 

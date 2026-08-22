@@ -57,6 +57,16 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
     return t === 'TRANSFER_REQUEST' || t === 'TRANSFER';
   };
 
+  const isStudentOfferType = (type?: string) => {
+    if (!type) return false;
+    const t = type.toUpperCase();
+    return t === 'STUDENT_OFFER';
+  };
+
+  const isTransferOrOfferType = (type?: string) => {
+    return isTransferType(type) || isStudentOfferType(type);
+  };
+
   const isAnnouncementType = (type?: string) => {
     if (!type) return false;
     const t = type.toUpperCase();
@@ -179,7 +189,7 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
       await approveTransferRequest(notificationId);
       setActionFeedback({
         type: 'success',
-        message: 'Transfer approved successfully.'
+        message: 'Student successfully transferred!'
       });
       setTimeout(() => setActionFeedback(null), 3000);
     } catch (e) {
@@ -470,13 +480,15 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
         ) : (
           filteredNotifications.map((notification, idx) => {
             const isTransfer = isTransferType(notification.type);
+            const isStudentOffer = isStudentOfferType(notification.type);
+            const isTransferOrOffer = isTransfer || isStudentOffer;
             const isAnnouncement = isAnnouncementType(notification.type);
             const isPending = isPendingStatus(notification.status);
             const isApproved = isApprovedStatus(notification.status);
             const isRejected = isRejectedStatus(notification.status);
 
             const isRecipient = notification.recipientId === currentUser?.id;
-            const canActionTransfer = isTransfer && isPending && (isRecipient || isAdmin);
+            const canActionTransfer = isTransferOrOffer && isPending && (isRecipient || isAdmin);
 
             return (
               <motion.div
@@ -500,14 +512,14 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
                     {/* Icon */}
                     <div
                       className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${
-                        isTransfer
-                          ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                        isTransferOrOffer
+                          ? 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
                           : isAnnouncement
                           ? 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                       }`}
                     >
-                      {isTransfer ? (
+                      {isTransferOrOffer ? (
                         <ArrowRightLeft className="w-5 h-5" />
                       ) : isAnnouncement ? (
                         <Megaphone className="w-5 h-5" />
@@ -523,7 +535,11 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
                           {notification.senderName || 'Staff Member'}
                         </span>
 
-                        {isTransfer && (
+                        {isStudentOffer ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
+                            📥 A student offer
+                          </span>
+                        ) : isTransfer ? (
                           <span
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${
                               isPending
@@ -541,7 +557,7 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
                               ? 'REJECTED'
                               : notification.status || 'PENDING'}
                           </span>
-                        )}
+                        ) : null}
 
                         {isAnnouncement && (
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
@@ -572,7 +588,7 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
                     </div>
                   </div>
 
-                  {/* Action Buttons: Approve / Reject */}
+                  {/* Action Buttons: Approve & Add / Reject */}
                   {canActionTransfer && (
                     <div className="flex items-center gap-2 sm:self-center shrink-0 pt-2 sm:pt-0">
                       <button
@@ -596,13 +612,13 @@ export const InboxView: React.FC<InboxViewProps> = ({ onSelectGroup: _onSelectGr
                         className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5" />
-                        <span>{processingId === notification.id ? 'Approving...' : 'Approve'}</span>
+                        <span>{processingId === notification.id ? 'Approving...' : 'Approve & Add'}</span>
                       </button>
                     </div>
                   )}
 
                   {/* Resolved status indicator */}
-                  {isTransfer && !isPending && (
+                  {isTransferOrOffer && !isPending && (
                     <div className="sm:self-center shrink-0">
                       {isApproved ? (
                         <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800">

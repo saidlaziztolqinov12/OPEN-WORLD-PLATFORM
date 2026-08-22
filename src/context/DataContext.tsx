@@ -579,11 +579,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const student = students.find((s) => s.id === studentId);
         if (student && (student.telegramChatId || student.parentTelegramId)) {
           const chatId = student.telegramChatId || student.parentTelegramId;
-          const statusEmoji = status === 'present' ? '✅' : '❌';
-          const statusText = status === 'present' ? 'Present' : 'Absent';
+          const statusText = status === 'present' ? '✅ Present' : status === 'late' ? '⚠️ Kechikib keldi (Late)' : '❌ Absent';
           const comment = commentsMap[studentId] || '';
           const studentName = `${student.firstName} ${student.surname}`;
-          const text = `🔔 <b>Open World Academy — Attendance Update</b>\n\n<b>Student:</b> ${studentName}\n<b>Date:</b> ${dateStr}\n<b>Status:</b> ${statusEmoji} ${statusText}\n${comment ? `<b>Note:</b> ${comment}` : ''}`;
+          const text = `🔔 <b>Open World Academy — Attendance Update</b>\n\n<b>Student:</b> ${studentName}\n<b>Date:</b> ${dateStr}\n<b>Status:</b> ${statusText}\n${comment ? `<b>Note:</b> ${comment}` : ''}`;
           
           sendTelegramMessage(chatId, text).catch((err) => {
             console.error('Failed to send Telegram message:', err);
@@ -793,17 +792,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Firestore update notice for notification approval:', e);
     }
 
-    // 4. Send automated inbox notification to Teacher B
+    // 4. Send automated inbox notification to Teacher A (requesting teacher)
     if (requestingTeacherId) {
       await sendNotification({
         recipientId: requestingTeacherId,
         recipientRole: 'teacher',
         senderId: notif.recipientId || currentUser?.id || 'admin-1',
-        senderName: teacherAName,
+        senderName: teacherBName,
         senderRole: currentUser?.role || 'system',
         type: 'SYSTEM',
-        title: 'Transfer Approved',
-        message: `${studentName} has been transferred to your group ${targetGroupName}.`,
+        title: 'Student Offer Accepted',
+        message: `✅ ${teacherBName} accepted student ${studentName} into group ${targetGroupName}.`,
         studentId: studentId,
         studentName: studentName,
         targetGroupId: targetGroupId,
@@ -837,18 +836,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const studentName =
       notif.studentName ||
       (student ? `${student.firstName} ${student.surname}` : 'Student');
-    const groupName = notif.currentGroupName || 'the cohort';
+    const targetGroupName = notif.targetGroupName || notif.currentGroupName || 'the cohort';
+    const rejectingTeacherName = currentUser?.name || 'Instructor';
 
     if (notif.senderId) {
       await sendNotification({
         recipientId: notif.senderId,
         recipientRole: 'teacher',
         senderId: notif.recipientId || currentUser?.id || 'admin-1',
-        senderName: currentUser?.name || 'Cohort Instructor',
+        senderName: rejectingTeacherName,
         senderRole: currentUser?.role || 'system',
         type: 'SYSTEM',
-        title: 'Transfer Request Declined',
-        message: `The transfer request for ${studentName} from ${groupName} was declined.`,
+        title: 'Student Offer Declined',
+        message: `❌ ${rejectingTeacherName} declined the offer for student ${studentName} to join ${targetGroupName}.`,
         studentId: notif.studentId,
         studentName: studentName,
         status: 'REJECTED',

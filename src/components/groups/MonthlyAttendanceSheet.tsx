@@ -18,7 +18,8 @@ import {
   BookOpen,
   HelpCircle,
   Lock,
-  UserX
+  UserX,
+  Clock
 } from 'lucide-react';
 
 interface ActiveCellDetail {
@@ -26,7 +27,7 @@ interface ActiveCellDetail {
   dateStr: string;
   dayNumber: number;
   dayOfWeek: string;
-  status: 'present' | 'absent' | 'unrecorded';
+  status: 'present' | 'absent' | 'late' | 'unrecorded';
   mark?: number | string;
   comment?: string;
   topicCovered?: string;
@@ -161,7 +162,7 @@ export const MonthlyAttendanceSheet: React.FC<MonthlyAttendanceSheetProps> = ({
             return;
           }
           const st = rec.statusMap[s.id];
-          if (st === 'present') {
+          if (st === 'present' || st === 'late') {
             presentCount++;
           } else if (st === 'absent') {
             absentCount++;
@@ -205,7 +206,7 @@ export const MonthlyAttendanceSheet: React.FC<MonthlyAttendanceSheetProps> = ({
         const rec = recordsByDate.get(day.dateStr);
         if (rec && rec.statusMap) {
           const st = rec.statusMap[s.id];
-          if (st === 'present') {
+          if (st === 'present' || st === 'late') {
             present++;
             assessed++;
           } else if (st === 'absent') {
@@ -514,6 +515,23 @@ export const MonthlyAttendanceSheet: React.FC<MonthlyAttendanceSheetProps> = ({
                           );
                         }
 
+                        if (status === 'late') {
+                          return (
+                            <td
+                              key={day.dayNumber}
+                              onClick={(e) => handleCellClick(e, student, day)}
+                              className={`p-1 text-center border-r border-slate-100 dark:border-slate-800/80 cursor-pointer transition-all hover:bg-amber-100/50 dark:hover:bg-amber-900/40 active:scale-95 ${
+                                isSelected ? 'ring-2 ring-indigo-500 rounded-lg z-10' : ''
+                              }`}
+                              title={`Late for ${student.firstName} on ${day.dateStr}`}
+                            >
+                              <div className="w-7 h-7 mx-auto rounded-lg bg-amber-50 dark:bg-amber-950/80 border border-amber-400 dark:border-amber-600 text-amber-700 dark:text-amber-300 font-extrabold text-xs flex items-center justify-center shadow-xs" title="Late (Kechikdi)">
+                                K
+                              </div>
+                            </td>
+                          );
+                        }
+
                         if (status === 'absent') {
                           return (
                             <td
@@ -700,6 +718,11 @@ export const MonthlyAttendanceSheet: React.FC<MonthlyAttendanceSheetProps> = ({
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-extrabold text-xs">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Present</span>
+                    </div>
+                  ) : activeCellDetail.status === 'late' ? (
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-extrabold text-xs">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>Late (Kechikdi)</span>
                     </div>
                   ) : activeCellDetail.status === 'absent' ? (
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 font-extrabold text-xs">
